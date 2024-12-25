@@ -3,6 +3,7 @@ dofile("src/node.lua")
 function love.load()
     root = Node.new(nil, 0, 0, 1080, 720, Color(1.0, 1.0, 1.0, 1.0))
     fps = Node.text(root, 0, 50, 15, 16, Color(0.0, 1.0, 0.0, 1.0))
+    cursor = Node.new(root, 0, 0, 10, 10, Color(1.0, 0.0, 0.0, 1.0))
 
     n1 = Node.new(root, 456, 44, 400, 300, nil)
     Node.new(root, 300, 60, 300, 260, nil)
@@ -15,6 +16,9 @@ end
 
 function love.update(dt)
     fps.text = love.timer.getFPS()
+    cursor.x = love.mouse.getX()
+    cursor.y = love.mouse.getY()
+    Node.updateAll(dt)
 end
 
 function love.mousepressed(x, y, button)
