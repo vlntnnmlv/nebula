@@ -6,6 +6,7 @@ Node = {}
 
 Node.nodes = {}
 Node.nodesCount = 0
+Node.drawGizmos = false
 
 local function register_node(node)
     node.id = Node.nodesCount
@@ -54,14 +55,17 @@ Node.new = function(parent, x, y, w, h, color)
     end
 
     self.draw = function()
-        love.graphics.setColor(1.0, 0.0, 0.0, 1.0)
-        love.graphics.polygon(
-            "line",
-            self.x, self.y,
-            self.x + self.w, self.y,
-            self.x + self.w, self.y + self.h,
-            self.x, self.y + self.h
-        )
+        -- gizmo
+        if Node.drawGizmos then
+            love.graphics.setColor(1.0, 0.0, 0.0, 1.0)
+            love.graphics.polygon(
+                "line",
+                self.x, self.y,
+                self.x + self.w, self.y,
+                self.x + self.w, self.y + self.h,
+                self.x, self.y + self.h
+            )
+        end
 
         local color = Color(self.color.r, self.color.g, self.color.b, self.color.a)
         if self.state == 1 then
@@ -79,7 +83,6 @@ Node.new = function(parent, x, y, w, h, color)
     end
 
     self.drawInternal = function()
-        -- gizmo
         love.graphics.polygon(
             "fill",
             self.x, self.y,
@@ -120,7 +123,7 @@ Node.text = function(parent, text, x, y, fontSize, color)
     local self = Node.new(parent, x, y, 0, 0, color)
 
     self.text = text
-    self.font = love.graphics.newFont(fontSize)
+    self.font = love.graphics.newFont("alagard.ttf", fontSize)
     self.w = self.font:getWidth(self.text)
     self.h = self.font:getBaseline(self.text)
 
