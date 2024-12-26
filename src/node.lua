@@ -123,7 +123,7 @@ Node.text = function(parent, text, x, y, fontSize, color)
     local self = Node.new(parent, x, y, 0, 0, color)
 
     self.text = text
-    self.font = love.graphics.newFont("alagard.ttf", fontSize)
+    self.font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
     self.w = self.font:getWidth(self.text)
     self.h = self.font:getBaseline(self.text)
 
