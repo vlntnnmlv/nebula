@@ -147,20 +147,57 @@ Node.new = function(parent, x, y, w, h, color, ignoreEvents)
     return self
 end
 
-Node.text = function(parent, text, cx, cy, fontSize, color, ignoreEvents)
+Node.text = function(parent, text, cx, cy, fontSize, color, ignoreEvents, incept)
     local self = Node.new(parent, cx, cy, 0, 0, color, ignoreEvents)
+
+    self.restore = function()
+        self.w = self.font:getWidth(self.text)
+        self.h = self.font:getBaseline(self.text)
+        self.x = self.cx - self.w / 2
+        self.y = self.cy - self.h / 2
+
+        if self.incept then
+            if self.incepted == nil then
+                self.incepted = Node.text(self, text, cx + 2, cy + 2, fontSize - 1, color, true, false)
+            else
+                self.incepted.setText(self.text)
+            end
+        end
+    end
 
     self.text = text
     self.font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
+    self.incept = incept
+    self.cx = cx
+    self.cy = cy
 
-    self.w = self.font:getWidth(self.text)
-    self.h = self.font:getBaseline(self.text)
-    self.x = cx - self.w / 2
-    self.y = cy - self.h / 2
+    self.restore()
+
+    self.setText = function(text)
+        self.text = text
+
+        self.restore()
+    end
 
     self.drawInternal = function()
         love.graphics.setFont(self.font)
         love.graphics.print(self.text, self.x, self.y)
+    end
+
+    return self
+end
+
+Node.image = function(parent, x, y, w, h, image, color, ignoreEvents)
+    local self = Node.new(parent, x, y, w, h, color, ignoreEvents)
+
+    self.imageData = love.image.newImageData(image)
+    self.image = love.graphics.newImage(self.imageData, { linear = true })
+
+    self.scaleX = self.w / self.imageData:getWidth()
+    self.scaleY = self.h / self.imageData:getHeight()
+
+    self.drawInternal = function()
+        love.graphics.draw(self.image, self.x, self.y, 0, self.scaleX, self.scaleY)
     end
 
     return self
@@ -184,8 +221,8 @@ Node.pressedElement = nil
 Node.updateMouseButtonEvent = function(pressed)
     if Node.nodesCount == 0 then return end
 
-    Node.nodes[0].update(_)
-    Node.nodes[0].updateChildren(_)
+    Node.nodes[0].update(0)
+    Node.nodes[0].updateChildren(0)
 
     if pressed then
         Node.pressedElement = Node.focusElement
