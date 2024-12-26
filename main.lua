@@ -1,14 +1,25 @@
 dofile("src/node.lua")
-dofile("src/palette.lua")
 
 function love.load()
-    mainFont = love.graphics.newFont("resources/fonts/alagard.ttf", 32)
-    love.graphics.setFont(mainFont)
+    Node.drawGizmos = true
+    love.graphics.setFont(love.graphics.newFont("resources/fonts/alagard.ttf", 32))
 
-    root = Node.new(nil, 0, 0, 1080, 720, palette.ebony)
-    fps = Node.text(root, 0, 15, 15, 32, palette.red)
-    cursor = Node.new(root, 0, 0, 4, 4, palette.red)
-    play = Node.text(root, "Play", 1080 / 2, 720 / 2, 64, palette.atomicTangerine)
+    local w, h = 1080, 720
+
+    local root = Node.new(nil, 0, 0, w, h, palette.ebony, true)
+    fps = Node.text(root, 60, 20, 15, 32, palette.red, true)
+    cursor = Node.new(root, 0, 0, 4, 4, palette.cambridgeBlue, true)
+
+    local menuW, menuH = 500, 400
+    local menu = Node.new(root, w / 2 - menuW / 2, h / 2 - menuH / 2, menuW, menuH, palette.sunset, false)
+
+    local play = Node.text(menu, "Play", w / 2, h / 2 - 32, 64, palette.atomicTangerine, false)
+    local function playAction()
+        play.text = "PLAY"
+    end
+    play.setAction(playAction)
+
+    local settings = Node.text(menu, "Settings", w / 2, h / 2 + 32, 64, palette.atomicTangerine, false)
 end
 
 function love.draw()
@@ -25,4 +36,9 @@ function love.update(dt)
 end
 
 function love.mousepressed(x, y, button)
+    Node.updateMouseButtonEvent(true, x, y)
+end
+
+function love.mousereleased(x, y, button)
+    Node.updateMouseButtonEvent(false, x, y)
 end
