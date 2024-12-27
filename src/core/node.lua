@@ -54,10 +54,6 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     end
 
     self.draw = function()
-        if self.scene.drawGizmos then
-            self.drawGizmo()
-        end
-
         local actualColor = Color(self.color.r, self.color.g, self.color.b, self.color.a)
         if self.hovered then
             actualColor.r = actualColor.r - 0.1
@@ -69,6 +65,12 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
         love.graphics.setColor(actualColor.r, actualColor.g, actualColor.b, actualColor.a)
 
         self.drawInternal()
+
+        if self.scene.drawGizmos then
+            self.drawGizmo()
+        end
+
+        love.graphics.setColor(actualColor.r, actualColor.g, actualColor.b, actualColor.a)
 
         self.drawChildren()
     end

@@ -16,7 +16,7 @@ function love.load()
 
     -- MENU
     SceneMenu = Scene.new("Menu")
-    SceneMenu.drawGizmos = true
+    -- SceneMenu.drawGizmos = true
 
     local root = Node.new(SceneMenu, nil, 0, 0, w, h, palette.darkest, true)
     local overlay = Node.new(SceneMenu, root, 0, 0, w, h, Color(0.0, 0.0, 0.0, 0.0), true)
@@ -37,17 +37,24 @@ function love.load()
     SceneGameplay = Scene.new("Gameplay")
     SceneGameplay.drawGizmos = true
 
-    local root = Node.new(SceneGameplay, nil, 0, 0, w, h, palette.darkest, true)
+    local root = Node.new(SceneGameplay, nil, 0, 0, w, h, Color(0.117, 0.109, 0.223, 1.0), true)
     local overlay = Node.new(SceneGameplay, root, 0, 0, w, h, Color(0.0, 0.0, 0.0, 0.0), true)
     FPS.new(SceneGameplay, overlay, 20, 15, 32, palette.gizmoRed)
     Cosmos.new(SceneGameplay, root, w, h)
 
     -- CurrentScene
     CurrentScene = SceneMenu
+
+    canvas = love.graphics.newCanvas(w,h)
 end
 
 function love.draw()
+    love.graphics.setCanvas(canvas)
     CurrentScene.drawAll()
+    love.graphics.setCanvas()
+
+    love.graphics.setShader(love.graphics.newShader("resources/shaders/pixelize.glsl"))
+    love.graphics.draw(canvas, 0, 0)
 end
 
 function love.update(dt)
