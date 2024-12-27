@@ -187,17 +187,26 @@ Node.text = function(parent, text, cx, cy, fontSize, color, ignoreEvents, incept
     return self
 end
 
-Node.image = function(parent, x, y, w, h, image, color, ignoreEvents)
+Node.image = function(parent, x, y, w, h, image, shader, color, ignoreEvents)
     local self = Node.new(parent, x, y, w, h, color, ignoreEvents)
 
     self.imageData = love.image.newImageData(image)
     self.image = love.graphics.newImage(self.imageData, { linear = true })
 
+    if shader ~= nil then
+        self.shader = love.graphics.newShader(shader)
+    end
+
     self.scaleX = self.w / self.imageData:getWidth()
     self.scaleY = self.h / self.imageData:getHeight()
 
     self.drawInternal = function()
+        if self.shader ~= nil then
+            love.graphics.setShader(self.shader)
+        end
+
         love.graphics.draw(self.image, self.x, self.y, 0, self.scaleX, self.scaleY)
+        love.graphics.setShader()
     end
 
     return self

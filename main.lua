@@ -2,6 +2,7 @@ dofile("src/node.lua")
 
 function love.load()
     -- Node.drawGizmos = true
+    love.graphics.setDefaultFilter("nearest", "nearest")
     love.graphics.setFont(love.graphics.newFont("resources/fonts/alagard.ttf", 32))
 
     local w, h = 1080, 720
@@ -12,6 +13,7 @@ function love.load()
 
     love.mouse.setCursor(love.mouse.newCursor(love.image.newImageData("resources/textures/cursor.png"), 0, 0))
 
+    ---- MENU
     local menuW, menuH = 500, 400
     local menu = Node.new(root, w / 2 - menuW / 2, h / 2 - menuH / 2, menuW, menuH, Color(0,0,0,0), false)
 
@@ -22,6 +24,9 @@ function love.load()
     play.setAction(playAction)
 
     local settings = Node.text(menu, "Settings", w / 2, h / 2 + 32, 64, palette.atomicTangerine, false, true)
+
+    ---- GAMEPLAY
+    -- planet = Node.image(root, w / 2 - 32, h / 2 - 32, 64, 64, "resources/textures/sphere.png", "resources/shaders/flitching", Color(1,1,1,1), false)
 end
 
 function love.draw()
