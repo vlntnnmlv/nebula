@@ -199,14 +199,21 @@ Node.image = function(parent, x, y, w, h, image, shader, color, ignoreEvents)
 
     self.scaleX = self.w / self.imageData:getWidth()
     self.scaleY = self.h / self.imageData:getHeight()
+    self.rotation = 0
+    self.shearX = 0
+    self.shearY = 0
 
     self.drawInternal = function()
         if self.shader ~= nil then
             love.graphics.setShader(self.shader)
         end
 
-        love.graphics.draw(self.image, self.x, self.y, 0, self.scaleX, self.scaleY)
+        love.graphics.draw(self.image, self.x, self.y, self.rotation, self.scaleX, self.scaleY, 0, 0, self.shearX, self.shearY)
         love.graphics.setShader()
+    end
+
+    self.rotate = function(rotation)
+        self.rotation = rotation
     end
 
     return self
