@@ -4,30 +4,16 @@ function Color(r,g,b,a)
     return { r = r, g = g, b = b, a = a}
 end
 
-Scene = {}
-
 Node = {}
 
-Node.nodes = {}
-Node.nodesCount = 0
-
-Node.focusElement = nil
-
-Node.drawGizmos = false
-
-local function register_node(node)
-    node.id = Node.nodesCount
-    Node.nodesCount = Node.nodesCount + 1
-
-    Node.nodes[node.id] = node
-end
-
-Node.new = function(parent, x, y, w, h, color, ignoreEvents)
+Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     local self = {}
 
+    self.scene = scene
     self.parent = parent
     self.children = {}
     self.childrenCount = 0
+    self.hovered = false
 
     if self.parent ~= nil then
         self.parent.linkChild(self)
@@ -68,31 +54,34 @@ Node.new = function(parent, x, y, w, h, color, ignoreEvents)
     end
 
     self.draw = function()
-        -- gizmo
-        if Node.drawGizmos then
-            love.graphics.setColor(palette.gizmoRed.r, palette.gizmoRed.g, palette.gizmoRed.b, palette.gizmoRed.a)
-            love.graphics.polygon(
-                "line",
-                self.x, self.y,
-                self.x + self.w, self.y,
-                self.x + self.w, self.y + self.h,
-                self.x, self.y + self.h
-            )
+        if self.scene.drawGizmos then
+            self.drawGizmo()
         end
 
-        local color = Color(self.color.r, self.color.g, self.color.b, self.color.a)
+        local actualColor = Color(self.color.r, self.color.g, self.color.b, self.color.a)
         if self.hovered then
-            color.r = color.r - 0.1
-            color.g = color.g - 0.1
-            color.b = color.b - 0.1
-            color.a = color.a
+            actualColor.r = actualColor.r - 0.1
+            actualColor.g = actualColor.g - 0.1
+            actualColor.b = actualColor.b - 0.1
+            actualColor.a = actualColor.a
         end
 
-        love.graphics.setColor(color.r, color.g, color.b, color.a)
+        love.graphics.setColor(actualColor.r, actualColor.g, actualColor.b, actualColor.a)
 
         self.drawInternal()
 
         self.drawChildren()
+    end
+
+    self.drawGizmo = function()
+        love.graphics.setColor(palette.gizmoRed.r, palette.gizmoRed.g, palette.gizmoRed.b, palette.gizmoRed.a)
+        love.graphics.polygon(
+            "line",
+            self.x, self.y,
+            self.x + self.w, self.y,
+            self.x + self.w, self.y + self.h,
+            self.x, self.y + self.h
+        )
     end
 
     self.drawInternal = function()
@@ -134,7 +123,7 @@ Node.new = function(parent, x, y, w, h, color, ignoreEvents)
         end
 
         self.hovered = true
-        Node.focusElement = self
+        self.scene.focusElement = self
 
         return true
     end
@@ -143,15 +132,13 @@ Node.new = function(parent, x, y, w, h, color, ignoreEvents)
         self.action = action
     end
 
-    self.hovered = false
-
-    register_node(self)
+    scene.registerNode(self)
 
     return self
 end
 
-Node.text = function(parent, text, cx, cy, fontSize, color, ignoreEvents, incept)
-    local self = Node.new(parent, cx, cy, 0, 0, color, ignoreEvents)
+Node.text = function(scene, parent, text, cx, cy, fontSize, color, ignoreEvents, incept)
+    local self = Node.new(scene, parent, cx, cy, 0, 0, color, ignoreEvents)
 
     self.restore = function()
         self.w = self.font:getWidth(self.text)
@@ -161,7 +148,7 @@ Node.text = function(parent, text, cx, cy, fontSize, color, ignoreEvents, incept
 
         if self.incept then
             if self.incepted == nil then
-                self.incepted = Node.text(self, text, cx + 2, cy + 2, fontSize - 1, color, true, false)
+                self.incepted = Node.text(self.scene, self, text, cx + 2, cy + 2, fontSize - 1, color, true, false)
             else
                 self.incepted.setText(self.text)
             end
@@ -190,8 +177,8 @@ Node.text = function(parent, text, cx, cy, fontSize, color, ignoreEvents, incept
     return self
 end
 
-Node.image = function(parent, x, y, w, h, image, shader, color, ignoreEvents)
-    local self = Node.new(parent, x, y, w, h, color, ignoreEvents)
+Node.image = function(scene, parent, x, y, w, h, image, shader, color, ignoreEvents)
+    local self = Node.new(scene, parent, x, y, w, h, color, ignoreEvents)
 
     self.imageData = love.image.newImageData(image)
     self.image = love.graphics.newImage(self.imageData)
@@ -222,34 +209,4 @@ Node.image = function(parent, x, y, w, h, image, shader, color, ignoreEvents)
     end
 
     return self
-end
-
-Node.drawAll = function()
-    if Node.nodesCount == 0 then return end
-
-    Node.nodes[0].draw()
-end
-
-Node.updateAll = function(_)
-    if Node.nodesCount == 0 then return end
-
-    Node.nodes[0].update(_)
-    Node.nodes[0].updateChildren(_)
-end
-
-Node.pressedElement = nil
-
-Node.updateMouseButtonEvent = function(pressed)
-    if Node.nodesCount == 0 then return end
-
-    Node.nodes[0].update(0)
-    Node.nodes[0].updateChildren(0)
-
-    if pressed then
-        Node.pressedElement = Node.focusElement
-    end
-
-    if not pressed and Node.pressedElement ~= nil and Node.pressedElement.id == Node.focusElement.id and Node.focusElement.action ~= nil then
-        Node.focusElement.action()
-    end
 end
