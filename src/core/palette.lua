@@ -6,5 +6,7 @@ palette = {
     darkest   = { r = 0.356, g = 0.249, b = 0.254, a = 1.0 },
 
     --
-    gizmo = { r = 1.0, g = 0.0, b = 0.0, a = 1.0}
+    gizmoRed   = { r = 1.0, g = 0.0, b = 0.0, a = 1.0},
+    gizmoGreen = { r = 0.0, g = 1.0, b = 0.0, a = 1.0},
+    gizmoBlue  = { r = 0.0, g = 0.0, b = 1.0, a = 1.0}
 }

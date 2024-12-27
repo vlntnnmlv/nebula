@@ -1,8 +1,10 @@
-dofile("src/palette.lua")
+dofile("src/core/palette.lua")
 
 function Color(r,g,b,a)
     return { r = r, g = g, b = b, a = a}
 end
+
+Scene = {}
 
 Node = {}
 
@@ -68,7 +70,7 @@ Node.new = function(parent, x, y, w, h, color, ignoreEvents)
     self.draw = function()
         -- gizmo
         if Node.drawGizmos then
-            love.graphics.setColor(1.0, 0.0, 0.0, 1.0)
+            love.graphics.setColor(palette.gizmoRed.r, palette.gizmoRed.g, palette.gizmoRed.b, palette.gizmoRed.a)
             love.graphics.polygon(
                 "line",
                 self.x, self.y,
@@ -108,6 +110,7 @@ Node.new = function(parent, x, y, w, h, color, ignoreEvents)
 
         for i = 0, self.childrenCount - 1 do
             anyChildHovered = anyChildHovered or self.children[i].update(_)
+            if anyChildHovered then return true end
         end
 
         return anyChildHovered
@@ -191,7 +194,7 @@ Node.image = function(parent, x, y, w, h, image, shader, color, ignoreEvents)
     local self = Node.new(parent, x, y, w, h, color, ignoreEvents)
 
     self.imageData = love.image.newImageData(image)
-    self.image = love.graphics.newImage(self.imageData, { linear = true })
+    self.image = love.graphics.newImage(self.imageData)
 
     if shader ~= nil then
         self.shader = love.graphics.newShader(shader)
@@ -200,6 +203,8 @@ Node.image = function(parent, x, y, w, h, image, shader, color, ignoreEvents)
     self.scaleX = self.w / self.imageData:getWidth()
     self.scaleY = self.h / self.imageData:getHeight()
     self.rotation = 0
+    self.originOffsetX = self.imageData:getWidth() / 2
+    self.originOffsetY = self.imageData:getHeight() / 2
     self.shearX = 0
     self.shearY = 0
 
@@ -208,12 +213,12 @@ Node.image = function(parent, x, y, w, h, image, shader, color, ignoreEvents)
             love.graphics.setShader(self.shader)
         end
 
-        love.graphics.draw(self.image, self.x, self.y, self.rotation, self.scaleX, self.scaleY, 0, 0, self.shearX, self.shearY)
+        love.graphics.draw(self.image, self.x + self.w / 2, self.y + self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
         love.graphics.setShader()
     end
 
     self.rotate = function(rotation)
-        self.rotation = rotation
+        self.rotation = self.rotation + rotation
     end
 
     return self
@@ -244,7 +249,7 @@ Node.updateMouseButtonEvent = function(pressed)
         Node.pressedElement = Node.focusElement
     end
 
-    if not pressed and Node.pressedElement.id == Node.focusElement.id and Node.focusElement.action ~= nil then
+    if not pressed and Node.pressedElement ~= nil and Node.pressedElement.id == Node.focusElement.id and Node.focusElement.action ~= nil then
         Node.focusElement.action()
     end
 end
