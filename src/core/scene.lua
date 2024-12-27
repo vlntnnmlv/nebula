@@ -2,9 +2,10 @@ dofile("src/core/node.lua")
 
 Scene = {}
 
-Scene.new = function()
+Scene.new = function(id)
     local self = {}
 
+    self.id = id
     self.nodes = {}
     self.nodesCount = 0
     self.focusElement = nil
@@ -13,6 +14,7 @@ Scene.new = function()
 
     self.registerNode = function(node)
         node.id = self.nodesCount
+
         self.nodesCount = self.nodesCount + 1
 
         self.nodes[node.id] = node
@@ -24,18 +26,16 @@ Scene.new = function()
         self.nodes[0].draw()
     end
 
-    self.updateAll = function(_)
+    self.updateAll = function(dt)
         if self.nodesCount == 0 then return end
 
-        self.nodes[0].update(_)
-        self.nodes[0].updateChildren(_)
+        self.nodes[0].update(dt)
     end
 
     self.updateMouseButtonEvent = function(pressed)
         if self.nodesCount == 0 then return end
 
         self.nodes[0].update(0)
-        self.nodes[0].updateChildren(0)
 
         if pressed then
             self.pressedElement = self.focusElement

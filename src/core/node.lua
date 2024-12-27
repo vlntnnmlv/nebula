@@ -94,21 +94,29 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
         )
     end
 
-    self.updateChildren = function(_)
+    self.updateInternal = function(dt) end
+
+    self.update = function(dt)
+        self.updateInternal(dt)
+
+        return self.updateState(dt)
+    end
+
+    self.updateChildren = function(dt)
         local anyChildHovered = false
 
         for i = 0, self.childrenCount - 1 do
-            anyChildHovered = anyChildHovered or self.children[i].update(_)
+            anyChildHovered = anyChildHovered or self.children[i].update(dt)
             if anyChildHovered then return true end
         end
 
         return anyChildHovered
     end
 
-    self.update = function(_)
+    self.updateState = function(dt)
         local mouseX, mouseY = love.mouse.getPosition()
 
-        local anyChildHovered = self.updateChildren(_)
+        local anyChildHovered = self.updateChildren(dt)
 
         if anyChildHovered then
             self.hovered = false

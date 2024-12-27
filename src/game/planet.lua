@@ -11,9 +11,10 @@ Planet.new = function(scene, root, x, y, m)
     self.ay = 0
 
     self.m = m
+    self.rotationSpeed = love.math.random() * 2
 
-    self.updatePhysics = function(dt)
-        self.rotate(love.math.random() * 2 * dt)
+    self.updateInternal = function(dt)
+        self.rotate(self.rotationSpeed * dt)
 
         self.vx = self.vx + self.ax
         self.vy = self.vy + self.ay
@@ -24,7 +25,7 @@ Planet.new = function(scene, root, x, y, m)
     local baseDrawGizmo = self.drawGizmo
     self.drawGizmo = function()
         baseDrawGizmo()
-
+        
         love.graphics.setColor(palette.gizmoRed.r, palette.gizmoRed.g, palette.gizmoRed.b, palette.gizmoRed.a)
         love.graphics.line(self.x + self.w / 2, self.y + self.h / 2, self.x + self.w / 2 + self.vx * 10, self.y + self.h / 2 + self.vy * 10)
         love.graphics.setColor(palette.gizmoGreen.r, palette.gizmoGreen.g, palette.gizmoGreen.b, palette.gizmoGreen.a)
