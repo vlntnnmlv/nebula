@@ -1,12 +1,16 @@
+function Color(r,g,b,a)
+    return { r = r, g = g, b = b, a = a}
+end
+
 palette = {
-    brightest = { r = 0.968, g = 0.623, b = 0.474, a = 1.0 },
-    bright    = { r = 0.968, g = 0.815, b = 0.541, a = 1.0 },
-    middle    = { r = 0.890, g = 0.941, b = 0.607, a = 1.0 },
-    dark      = { r = 0.529, g = 0.713, b = 0.654, a = 1.0 },
-    darkest   = { r = 0.356, g = 0.249, b = 0.254, a = 1.0 },
+    brightest = Color(0.968, 0.623, 0.474, 1.0),
+    bright    = Color(0.968, 0.815, 0.541, 1.0),
+    middle    = Color(0.890, 0.941, 0.607, 1.0),
+    dark      = Color(0.529, 0.713, 0.654, 1.0),
+    darkest   = Color(0.356, 0.249, 0.254, 1.0),
 
     --
-    gizmoRed   = { r = 1.0, g = 0.0, b = 0.0, a = 1.0},
-    gizmoGreen = { r = 0.0, g = 1.0, b = 0.0, a = 1.0},
-    gizmoBlue  = { r = 0.0, g = 0.0, b = 1.0, a = 1.0}
+    gizmoRed   = Color(1.0, 0.0, 0.0, 1.0),
+    gizmoGreen = Color(0.0, 1.0, 0.0, 1.0),
+    gizmoBlue  = Color(0.0, 0.0, 1.0, 1.0)
 }

@@ -1,9 +1,5 @@
 dofile("src/core/palette.lua")
 
-function Color(r,g,b,a)
-    return { r = r, g = g, b = b, a = a}
-end
-
 Node = {}
 
 Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)

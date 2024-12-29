@@ -3,7 +3,7 @@ dofile("src/core/node.lua")
 Planet = {}
 
 Planet.new = function(scene, root, x, y, m)
-    local self = Node.image(scene, root, x - m / 2, y - m / 2, m, m, "resources/textures/sphere.png", "resources/shaders/shine.glsl", Color(1,1,1,1), true)
+    local self = Node.image(scene, root, x - m / 2, y - m / 2, m, m, "resources/textures/meteor.png", "resources/shaders/shine.glsl", Color(1,1,1,1), true)
 
     self.vx = 0
     self.vy = 0
