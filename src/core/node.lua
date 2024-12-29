@@ -27,7 +27,7 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     self.h = h
 
     if color == nil then
-        self.color = Color(0.0, 0.0, 0.0, 0.1)
+        self.color = Color(1.0, 1.0, 1.0, 0.1)
     else
         self.color = color
     end
