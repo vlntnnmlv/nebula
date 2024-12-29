@@ -35,12 +35,18 @@ function love.load()
 
     ---- GAMEPLAY
     SceneGameplay = Scene.new("Gameplay")
-    -- SceneGameplay.drawGizmos = true
+    SceneGameplay.drawGizmos = true
 
     local root = Node.new(SceneGameplay, nil, 0, 0, w, h, Color(0.117, 0.109, 0.223, 1.0), true)
     local overlay = Node.new(SceneGameplay, root, 0, 0, w, h, Color(0.0, 0.0, 0.0, 0.0), true)
     FPS.new(SceneGameplay, overlay, 20, 15, 32, palette.gizmoRed)
-    Cosmos.new(SceneGameplay, root, w, h)
+    local cosmos = Cosmos.new(SceneGameplay, root, w, h)
+    cosmos.setAction(
+        function()
+            local mouseX, mouseY = love.mouse.getPosition()
+            cosmos.spawnPlanet(mouseX, mouseY, 20)
+        end
+    )
 
     -- CurrentScene
     CurrentScene = SceneMenu

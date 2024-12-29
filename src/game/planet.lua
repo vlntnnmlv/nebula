@@ -2,8 +2,10 @@ dofile("src/core/node.lua")
 
 Planet = {}
 
-Planet.new = function(scene, root, x, y, m)
-    local self = Node.image(scene, root, x - m / 2, y - m / 2, m, m, "resources/textures/meteor.png", "resources/shaders/shine.glsl", Color(1,1,1,1), true)
+Planet.new = function(scene, parent, x, y, m, isStar)
+    local texture = nil
+    if isStar then texture = "star" else texture = "meteor" end
+    local self = Node.image(scene, parent, x - m / 2, y - m / 2, m, m, "resources/textures/"..texture..".png", "resources/shaders/shine.glsl", Color(1,1,1,1), true)
 
     self.vx = 0
     self.vy = 0
@@ -16,10 +18,10 @@ Planet.new = function(scene, root, x, y, m)
     self.updateInternal = function(dt)
         self.rotate(self.rotationSpeed * dt)
 
-        self.vx = self.vx + self.ax
-        self.vy = self.vy + self.ay
-        self.x = self.x + self.vx
-        self.y = self.y + self.vy
+        self.vx = self.vx + self.ax * dt
+        self.vy = self.vy + self.ay * dt
+        self.x = self.x + self.vx * dt
+        self.y = self.y + self.vy * dt
     end
 
     local baseDrawGizmo = self.drawGizmo
@@ -27,9 +29,13 @@ Planet.new = function(scene, root, x, y, m)
         baseDrawGizmo()
         
         love.graphics.setColor(palette.gizmoRed.r, palette.gizmoRed.g, palette.gizmoRed.b, palette.gizmoRed.a)
-        love.graphics.line(self.x + self.w / 2, self.y + self.h / 2, self.x + self.w / 2 + self.vx * 10, self.y + self.h / 2 + self.vy * 10)
+        love.graphics.line(self.x + self.w / 2, self.y + self.h / 2, self.x + self.w / 2 + self.vx, self.y + self.h / 2 + self.vy)
         love.graphics.setColor(palette.gizmoGreen.r, palette.gizmoGreen.g, palette.gizmoGreen.b, palette.gizmoGreen.a)
-        love.graphics.line(self.x + self.w / 2, self.y + self.h / 2, self.x + self.w / 2 + self.ax * 100, self.y + self.h / 2 + self.ay * 100)
+        love.graphics.line(self.x + self.w / 2, self.y + self.h / 2, self.x + self.w / 2 + self.ax, self.y + self.h / 2 + self.ay)
+    end
+
+    self.toString = function(this)
+        return "Planet "..this.id..": ".."mass: "..this.m
     end
 
     return self

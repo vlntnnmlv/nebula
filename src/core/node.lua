@@ -1,4 +1,5 @@
 dofile("src/core/palette.lua")
+dofile("src/core/list.lua")
 
 Node = {}
 
@@ -7,8 +8,7 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
 
     self.scene = scene
     self.parent = parent
-    self.children = {}
-    self.childrenCount = 0
+    self.children = nil
     self.hovered = false
 
     if self.parent ~= nil then
@@ -27,14 +27,21 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     self.h = h
 
     if color == nil then
-        self.color = Color(1.0, 1.0, 1.0, 0.1)
+        self.color = Color(1, 1, 1, 1)
     else
         self.color = color
     end
 
     self.linkChild = function(child)
-        self.children[self.childrenCount] = child
-        self.childrenCount = self.childrenCount + 1
+        if self.children == nil then
+            self.children = List.append(self.children, child)
+        else
+            List.append(self.children, child)
+        end
+    end
+
+    self.remove = function()
+        List.filter(self.parent.children, function(node) return node.id == self.id end, true)
     end
 
     self.getParentID = function()
@@ -44,9 +51,7 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     end
 
     self.drawChildren = function()
-        for i = 0, self.childrenCount - 1 do
-            self.children[i].draw()
-        end
+        List.apply(self.children, function(child) child.draw() end)
     end
 
     self.draw = function()
@@ -103,9 +108,12 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     self.updateChildren = function(dt)
         local anyChildHovered = false
 
-        for i = 0, self.childrenCount - 1 do
-            anyChildHovered = anyChildHovered or self.children[i].update(dt)
-            if anyChildHovered then return true end
+        if (List.applyUntil(
+                self.children,
+                function(child) return child.update(dt) end,
+                function(result) return result == true end)
+            ) then
+            anyChildHovered = true
         end
 
         return anyChildHovered

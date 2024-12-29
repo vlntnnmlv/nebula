@@ -13,6 +13,36 @@ end
 List = {}
 -- N <-> N <-> N --
 
+List.append = function(list, value)
+    local result = { value = value, prev = list, next = nil }
+
+    if list ~= nil then
+        local cur = list
+        while cur.next ~= nil do cur = cur.next end
+        cur.next = result
+    end
+
+    return result
+end
+
+List.apply = function(list, func)
+    local cur = list
+    while cur ~= nil do
+        func(cur.value)
+        cur = cur.next
+    end
+end
+
+List.applyUntil = function(list, func, condition)
+    local cur = list
+    local tempResult = nil
+    while cur ~= nil do
+        tempResult = func(cur.value)
+        if condition(tempResult) then return tempResult end
+        cur = cur.next
+    end
+end
+
 List.remove = function(node)
     local result = node.next
 
@@ -49,12 +79,9 @@ List.filter = function(list, func, first)
     return result
 end
 
-List.append = function(node, value)
-    node.next = { value = value, prev = node, next = nil}
-    return node.next
-end
-
 List.dump = function(list)
+    if list == nil then io.write("nil\n") return end
+
     local cur = list
     io.write("nil<-")
     while cur ~= nil do
