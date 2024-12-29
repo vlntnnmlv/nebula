@@ -1,30 +1,20 @@
 dofile("src/core/list.lua")
 
-local l = { value = 1, prev = nil, next = nil }
+local function func(v)
+    return tostring(v.id)
+end
+
+local l = { value = { id = 1, toString = func }, prev = nil, next = nil }
 
 local cur = l
 for i = 2, 10 do
-    cur = List.append(cur, i)
+    cur = List.append(cur, { id = i, toString = func } )
 end
 
-cur = l
-while cur ~= nil do
-    print("value: "..cur.value)
-    cur = cur.next
-end
-
-cur = l
-while cur ~= nil do
-    if cur.value == 5 then
-        print("remove value: "..5)
-        List.removeNode(cur)
-        break
-    end
-    cur = cur.next
-end
-
-cur = l
-while cur ~= nil do
-    print("value: "..cur.value)
-    cur = cur.next
-end
+List.dump(l)
+l = List.filter(l, function(value) return value.id == 5 end, true)
+List.dump(l)
+l = List.filter(l, function(value) return value.id == 1 or value.id == 2 end, false)
+List.dump(l)
+l = List.filter(l, function(value) return value.id % 2 == 0 end, false)
+List.dump(l)
