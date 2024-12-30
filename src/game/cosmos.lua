@@ -48,7 +48,7 @@ Cosmos.new = function(scene, parent, w, h)
 
         local cur = self.planets.head
         while cur ~= nil do
-            love.graphics.setColor(palette.gizmoBlue.r, palette.gizmoBlue.g, palette.gizmoBlue.b, palette.gizmoBlue.a)
+            love.graphics.setColor(Palette.gizmoBlue.r, Palette.gizmoBlue.g, Palette.gizmoBlue.b, Palette.gizmoBlue.a)
             love.graphics.line(cur.value.cx, cur.value.cy, self.star.cx, self.star.cy)
             cur = cur.next
         end

@@ -18,21 +18,21 @@ function love.load()
     SceneMenu = Scene.new("Menu")
     -- SceneMenu.drawGizmos = true
 
-    local root = Node.new(SceneMenu, nil, 0, 0, w, h, palette.darkest, true)
+    local root = Node.new(SceneMenu, nil, 0, 0, w, h, Palette.darkest, true)
     local overlay = Node.new(SceneMenu, root, 0, 0, w, h, Color(0.0, 0.0, 0.0, 0.0), true)
-    FPS.new(SceneMenu, overlay, 20, 15, 32, palette.gizmoRed)
+    FPS.new(SceneMenu, overlay, 20, 15, 32, Palette.gizmoRed)
 
     local menuW, menuH = 500, 400
     local menu = Node.new(SceneMenu, root, w / 2 - menuW / 2, h / 2 - menuH / 2, menuW, menuH, Color(0,0,0,0), false)
 
-    local play = Node.text(SceneMenu, menu, "Play", w / 2, h / 2 - 32, 64, palette.bright, false, true)
+    local play = Node.text(SceneMenu, menu, "Play", w / 2, h / 2 - 32, 64, Palette.bright, false, true)
     local function playAction(pressed)
         if pressed then return end
         CurrentScene = SceneGameplay
     end
     play.setAction(playAction)
 
-    local settings = Node.text(SceneMenu, menu, "Settings", w / 2, h / 2 + 32, 64, palette.brightest, false, true)
+    local settings = Node.text(SceneMenu, menu, "Settings", w / 2, h / 2 + 32, 64, Palette.brightest, false, true)
 
     ---- GAMEPLAY
     SceneGameplay = Scene.new("Gameplay")
@@ -40,9 +40,9 @@ function love.load()
 
     local root = Node.new(SceneGameplay, nil, 0, 0, w, h, Color(0.117, 0.109, 0.223, 1.0), true)
     local overlay = Node.new(SceneGameplay, root, 0, 0, w, h, Color(0.0, 0.0, 0.0, 0.0), true)
-    FPS.new(SceneGameplay, overlay, 20, 15, 32, palette.gizmoRed)
+    FPS.new(SceneGameplay, overlay, 20, 15, 32, Palette.gizmoRed)
     local cosmos = Cosmos.new(SceneGameplay, root, w, h)
-    
+
     CurrentPlanet = nil
     cosmos.setAction(
         function(pressed)

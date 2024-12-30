@@ -33,9 +33,9 @@ Planet.new = function(scene, parent, x, y, m, isStar)
     self.drawGizmo = function()
         baseDrawGizmo()
         
-        love.graphics.setColor(palette.gizmoRed.r, palette.gizmoRed.g, palette.gizmoRed.b, palette.gizmoRed.a)
+        love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
         love.graphics.line(self.cx, self.cy, self.x + self.vx, self.y + self.vy)
-        love.graphics.setColor(palette.gizmoGreen.r, palette.gizmoGreen.g, palette.gizmoGreen.b, palette.gizmoGreen.a)
+        love.graphics.setColor(Palette.gizmoGreen.r, Palette.gizmoGreen.g, Palette.gizmoGreen.b, Palette.gizmoGreen.a)
         love.graphics.line(self.cx, self.cy, self.x + self.ax, self.y + self.ay)
     end
 

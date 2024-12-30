@@ -2,7 +2,7 @@ function Color(r,g,b,a)
     return { r = r, g = g, b = b, a = a}
 end
 
-palette = {
+Palette = {
     brightest = Color(0.968, 0.623, 0.474, 1.0),
     bright    = Color(0.968, 0.815, 0.541, 1.0),
     middle    = Color(0.890, 0.941, 0.607, 1.0),

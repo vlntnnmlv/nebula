@@ -73,7 +73,7 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     end
 
     self.drawGizmo = function()
-        love.graphics.setColor(palette.gizmoRed.r, palette.gizmoRed.g, palette.gizmoRed.b, palette.gizmoRed.a)
+        love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
         love.graphics.polygon(
             "line",
             self.x, self.y,
