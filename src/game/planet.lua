@@ -7,6 +7,8 @@ Planet.new = function(scene, parent, x, y, m, isStar)
     if isStar then texture = "star" else texture = "meteor" end
     local self = Node.image(scene, parent, x - m / 2, y - m / 2, m, m, "resources/textures/"..texture..".png", "resources/shaders/shine.glsl", Color(1,1,1,1), true)
 
+    self.cx = x
+    self.cy = y
     self.vx = 0
     self.vy = 0
     self.ax = 0
@@ -20,8 +22,11 @@ Planet.new = function(scene, parent, x, y, m, isStar)
 
         self.vx = self.vx + self.ax * dt
         self.vy = self.vy + self.ay * dt
-        self.x = self.x + self.vx * dt
-        self.y = self.y + self.vy * dt
+        self.cx = self.cx + self.vx * dt
+        self.cy = self.cy + self.vy * dt
+
+        self.x = self.cx - self.m / 2
+        self.y = self.cy - self.m / 2
     end
 
     local baseDrawGizmo = self.drawGizmo
@@ -29,9 +34,9 @@ Planet.new = function(scene, parent, x, y, m, isStar)
         baseDrawGizmo()
         
         love.graphics.setColor(palette.gizmoRed.r, palette.gizmoRed.g, palette.gizmoRed.b, palette.gizmoRed.a)
-        love.graphics.line(self.x + self.w / 2, self.y + self.h / 2, self.x + self.w / 2 + self.vx, self.y + self.h / 2 + self.vy)
+        love.graphics.line(self.cx, self.cy, self.x + self.vx, self.y + self.vy)
         love.graphics.setColor(palette.gizmoGreen.r, palette.gizmoGreen.g, palette.gizmoGreen.b, palette.gizmoGreen.a)
-        love.graphics.line(self.x + self.w / 2, self.y + self.h / 2, self.x + self.w / 2 + self.ax, self.y + self.h / 2 + self.ay)
+        love.graphics.line(self.cx, self.cy, self.x + self.ax, self.y + self.ay)
     end
 
     self.toString = function(this)

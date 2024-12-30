@@ -1,25 +1,74 @@
 dofile("src/core/list.lua")
 
-local function func(v)
-    return tostring(v.id)
+print("Create empty")
+local l = List.new()
+l.dump()
+
+print("fill")
+for i = 1, 10 do
+    l.append(i)
 end
+l.dump()
 
-local function double(v)
-    print(v*2)
+print("Remove node in the middle")
+local cur = l.head
+while cur ~= nil do
+    if cur.value == 5 then
+        l.remove(cur)
+        break
+    end
+    cur = cur.next
 end
+l.dump()
 
-local l = List.append(nil, { id = 1, toString = func, double = double })
-
-local cur = l
-for i = 2, 10 do
-    cur = List.append(cur, { id = i, toString = func, double = double } )
+print("Remove first node")
+local cur = l.head
+while cur ~= nil do
+    if cur.value == 1 then
+        l.remove(cur)
+        break
+    end
+    cur = cur.next
 end
+l.dump()
 
-List.dump(l)
-l = List.filter(l, function(value) return value.id == 5 end, true)
-List.dump(l)
-l = List.filter(l, function(value) return value.id == 1 or value.id == 2 end, false)
-List.dump(l)
-l = List.filter(l, function(value) return value.id % 2 == 0 end, false)
-List.dump(l)
-List.apply(l, function(v) v.double(v.id) end)
+print("Remove first node again")
+local cur = l.head
+while cur ~= nil do
+    if cur.value == 2 then
+        l.remove(cur)
+        break
+    end
+    cur = cur.next
+end
+l.dump()
+
+print("Remove last node")
+local cur = l.head
+while cur ~= nil do
+    if cur.value == 10 then
+        l.remove(cur)
+        break
+    end
+    cur = cur.next
+end
+l.dump()
+
+print("Remove last node again")
+local cur = l.head
+while cur ~= nil do
+    if cur.value == 9 then
+        l.remove(cur)
+        break
+    end
+    cur = cur.next
+end
+l.dump()
+
+print("Remove all except one (filter)")
+l.filter(function(v) return v > 3 end, false)
+l.dump()
+
+print("Remove last one")
+l.remove(l.tail)
+l.dump()

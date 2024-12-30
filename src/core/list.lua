@@ -10,87 +10,112 @@ local function getValueString(value)
     return tostring(value)
 end
 
-List = {}
+local ListNode = {}
+
+ListNode.new = function(value)
+    local self = { value = value, next = nil, prev = nil }
+    return self
+end
+
 -- N <-> N <-> N --
+List = {}
 
-List.append = function(list, value)
-    local result = { value = value, prev = list, next = nil }
+List.new = function()
+    local self = {}
 
-    if list ~= nil then
-        local cur = list
-        while cur.next ~= nil do cur = cur.next end
-        cur.next = result
-    end
+    self.head = nil
+    self.tail = nil
+    self.len = 0
 
-    return result
-end
+    self.dump = function()
+        io.write("L<"..self.len.."> ")
+        if self.head == nil then io.write("nil\n") return end
 
-List.apply = function(list, func)
-    local cur = list
-    while cur ~= nil do
-        func(cur.value)
-        cur = cur.next
-    end
-end
-
-List.applyUntil = function(list, func, condition)
-    local cur = list
-    local tempResult = nil
-    while cur ~= nil do
-        tempResult = func(cur.value)
-        if condition(tempResult) then return tempResult end
-        cur = cur.next
-    end
-end
-
-List.remove = function(node)
-    local result = node.next
-
-    if node.prev ~= nil then
-        node.prev.next = node.next
-    end
-
-    if node.next ~= nil then
-        node.next.prev = node.prev
-    end
-
-    node.prev = nil
-    node.next = nil
-    node = nil
-
-    return result
-end
-
-List.filter = function(list, func, first)
-    local result = list
-    local cur = list
-    while cur ~= nil do
-        if func(cur.value) then
-            if result == cur then
-                result = cur.next
+        local cur = self.head
+        io.write("nil<-")
+        while cur ~= nil do
+            if cur.next == nil then
+                io.write(getValueString(cur.value).."->")
+            else
+                io.write(getValueString(cur.value).."<->")
             end
-            cur = List.remove(cur)
-            if first then return result end
+            cur = cur.next
+        end
+        io.write("nil\n")
+    end
+
+    self.append = function(value)
+        if self.head == nil then
+            self.head = ListNode.new(value)
+            self.tail = self.head
         else
+            self.tail.next = ListNode.new(value)
+            self.tail.next.prev = self.tail
+            self.tail = self.tail.next
+        end
+
+        self.len = self.len + 1
+    end
+
+    self.remove = function(node)
+        local result = node.next
+    
+        if node == self.head then
+            self.head = node.next
+        end
+
+        if node == self.tail then
+            self.tail = node.prev
+        end
+
+        if node.prev ~= nil then
+            node.prev.next = node.next
+        end
+    
+        if node.next ~= nil then
+            node.next.prev = node.prev
+        end
+
+    
+        node.prev = nil
+        node.next = nil
+        node.value = nil
+        node = nil
+        
+        self.len = self.len - 1
+
+        return result
+    end
+
+    self.filter = function(func, first)
+        local cur = self.head
+        while cur ~= nil do
+            if func(cur.value) then
+                cur = self.remove(cur)
+                if first then return end
+            else
+                cur = cur.next
+            end
+        end
+    end
+
+    self.apply = function(func)
+        local cur = self.head
+        while cur ~= nil do
+            func(cur.value)
             cur = cur.next
         end
     end
 
-    return result
-end
-
-List.dump = function(list)
-    if list == nil then io.write("nil\n") return end
-
-    local cur = list
-    io.write("nil<-")
-    while cur ~= nil do
-        if cur.next == nil then
-            io.write(getValueString(cur.value).."->")
-        else
-            io.write(getValueString(cur.value).."<->")
+    self.applyUntil = function(func, condition)
+        local cur = self.head
+        local tempResult = nil
+        while cur ~= nil do
+            tempResult = func(cur.value)
+            if condition(tempResult) then return tempResult end
+            cur = cur.next
         end
-        cur = cur.next
     end
-    io.write("nil\n")
+
+    return self
 end
