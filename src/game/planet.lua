@@ -4,8 +4,17 @@ Planet = {}
 
 Planet.new = function(scene, parent, x, y, m, isStar)
     local texture = nil
-    if isStar then texture = "star" else texture = "meteor" end
-    local self = Node.image(scene, parent, x - m / 2, y - m / 2, m, m, "resources/textures/"..texture..".png", "resources/shaders/shine.glsl", Color(1,1,1,1), true)
+    local shader = nil
+    if isStar then
+        texture = "star"
+        shader = "shine"
+    else
+        texture = "meteor"
+        shader = "chrome"
+    end
+
+    local self = Node.image(scene, parent, x - m / 2, y - m / 2, m, m, "resources/textures/"..texture..".png", "resources/shaders/"..shader..".glsl", Color(1,1,1,1), true)
+    self.isStar = isStar
 
     self.cx = x -- actual center of the planet
     self.cy = y -- actual center of the planet
@@ -15,6 +24,8 @@ Planet.new = function(scene, parent, x, y, m, isStar)
     self.ay = 0
 
     self.m = m
+    self.time = 0
+
     -- self.massText = Node.text(self.scene, self, self.m, self.cx, self.cy, 32, Palette.gizmoBlue, true, false)
     self.rotationSpeed = love.math.random() * 2
 
@@ -26,6 +37,11 @@ Planet.new = function(scene, parent, x, y, m, isStar)
         self.setSize(newM, newM)
     end
 
+    if self.isStar then
+        self.shaderParameters.append({ name = "iTime", value = 0})
+    end
+
+    local updateInternalBase = self.updateInternal
     self.updateInternal = function(dt)
         self.rotate(self.rotationSpeed * dt)
 
@@ -38,6 +54,13 @@ Planet.new = function(scene, parent, x, y, m, isStar)
 
         self.x = self.cx - self.m / 2 -- rect coordinates for rendering
         self.y = self.cy - self.m / 2 -- rect coordinates for rendering
+
+        self.time = self.time + dt
+        if self.isStar then
+            self.shaderParameters.head.value.value = self.time
+        end
+
+        updateInternalBase()
     end
 
     local baseDrawGizmo = self.drawGizmo

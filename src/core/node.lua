@@ -220,6 +220,17 @@ Node.image = function(scene, parent, x, y, w, h, image, shader, color, ignoreEve
         love.graphics.setShader()
     end
 
+    self.shaderParameters = List.new()
+    self.updateInternal = function(dt)
+        if self.shaderParameters.len ~= 0 and self.shader ~= nil then
+            self.shaderParameters.apply(
+                function(paramater)
+                    self.shader:send(paramater.name, paramater.value)
+                end
+            )
+        end
+    end
+
     self.rotate = function(rotation)
         self.rotation = self.rotation + rotation
     end

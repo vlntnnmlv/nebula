@@ -13,7 +13,7 @@ function love.load()
 
     -- MENU
     local sceneMenu = Scene.new("Menu")
-    sceneMenu.drawGizmos = true
+    -- sceneMenu.drawGizmos = true
 
     local root = Node.new(sceneMenu, nil, 0, 0, w, h, Palette.darkest, true)
     local overlay = Node.new(sceneMenu, root, 0, 0, w, h, Color(0, 0, 0, 0), true)
@@ -39,7 +39,7 @@ function love.load()
 
     ---- GAMEPLAY
     local sceneGameplay = Scene.new("Gameplay")
-    sceneGameplay.drawGizmos = true
+    -- sceneGameplay.drawGizmos = true
 
     local root = Node.new(sceneGameplay, nil, 0, 0, w, h, Color(0.117, 0.109, 0.223, 1.0), true)
     local overlay = Node.new(sceneGameplay, root, 0, 0, w, h, Color(0.0, 0.0, 0.0, 0.0), true)

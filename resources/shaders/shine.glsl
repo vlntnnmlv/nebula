@@ -1,15 +1,23 @@
 #pragma language glsl3
 
+uniform float iTime;
+
 vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
 {
     vec4 texcolor = Texel(tex, texture_coords);
 
-    vec4 effectColor = vec4(texture_coords.x, texture_coords.y, 0.0, 1.0) / 5.0;
+    vec2 uvC = texture_coords - vec2(0.5);
 
-    vec4 result = texcolor * color + effectColor;
-    if (texcolor.a <= 0.0)
+    float dist = sqrt(uvC.x * uvC.x + uvC.y * uvC.y);
+    float v = smoothstep(-2.0, 2.0, sin(dist * 100.0 - iTime * 5.0));
+
+    v = smoothstep(-1.0, v, dist * 2.0) * smoothstep(0.5, 0.0, dist);
+
+    vec4 result = texcolor * color * v;// vec4(v,v,v, 0.5); // texcolor * color + 
+
+    if (texcolor.a <= 0.0 || v >= 1.0)
     {
-        result.a = 0.0;
+        result.a = smoothstep(0.0, 1.0, texcolor.a);
     }
 
     return result;
