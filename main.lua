@@ -26,7 +26,8 @@ function love.load()
     local menu = Node.new(SceneMenu, root, w / 2 - menuW / 2, h / 2 - menuH / 2, menuW, menuH, Color(0,0,0,0), false)
 
     local play = Node.text(SceneMenu, menu, "Play", w / 2, h / 2 - 32, 64, palette.bright, false, true)
-    local function playAction()
+    local function playAction(pressed)
+        if pressed then return end
         CurrentScene = SceneGameplay
     end
     play.setAction(playAction)
@@ -41,10 +42,19 @@ function love.load()
     local overlay = Node.new(SceneGameplay, root, 0, 0, w, h, Color(0.0, 0.0, 0.0, 0.0), true)
     FPS.new(SceneGameplay, overlay, 20, 15, 32, palette.gizmoRed)
     local cosmos = Cosmos.new(SceneGameplay, root, w, h)
+    
+    CurrentPlanet = nil
     cosmos.setAction(
-        function()
+        function(pressed)
             local mouseX, mouseY = love.mouse.getPosition()
-            cosmos.spawnPlanet(mouseX, mouseY, 20)
+            if pressed then
+                CurrentPlanet = Planet.new(SceneGameplay, cosmos, mouseX, mouseY, 20)
+            else
+                if CurrentPlanet == nil then return end
+                CurrentPlanet.vx = CurrentPlanet.cx - mouseX
+                CurrentPlanet.vy = CurrentPlanet.cy - mouseY
+                cosmos.addPlanet(CurrentPlanet)
+            end
         end
     )
 

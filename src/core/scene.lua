@@ -39,10 +39,11 @@ Scene.new = function(id)
 
         if pressed then
             self.pressedElement = self.focusElement
+            self.focusElement.action(pressed)
         end
 
         if not pressed and self.pressedElement ~= nil and self.pressedElement.id == self.focusElement.id and self.focusElement.action ~= nil then
-            self.focusElement.action()
+            self.focusElement.action(pressed)
         end
     end
 

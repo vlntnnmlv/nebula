@@ -8,7 +8,7 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
 
     self.scene = scene
     self.parent = parent
-    self.children = nil
+    self.children = List.new()
     self.hovered = false
 
     if self.parent ~= nil then
@@ -33,15 +33,11 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     end
 
     self.linkChild = function(child)
-        if self.children == nil then
-            self.children = List.append(self.children, child)
-        else
-            List.append(self.children, child)
-        end
+        self.children.append(child)
     end
 
     self.remove = function()
-        List.filter(self.parent.children, function(node) return node.id == self.id end, true)
+        self.parent.children.filter(function(node) return node.id == self.id end, true)
     end
 
     self.getParentID = function()
@@ -51,7 +47,7 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     end
 
     self.drawChildren = function()
-        List.apply(self.children, function(child) child.draw() end)
+        self.children.apply(function(child) child.draw() end)
     end
 
     self.draw = function()
@@ -108,10 +104,9 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     self.updateChildren = function(dt)
         local anyChildHovered = false
 
-        if (List.applyUntil(
-                self.children,
-                function(child) return child.update(dt) end,
-                function(result) return result == true end)
+        if self.children.applyUntil(
+                function(child)  return child.update(dt) end,
+                function(result) return result == true end
             ) then
             anyChildHovered = true
         end

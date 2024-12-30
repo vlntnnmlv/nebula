@@ -28,24 +28,25 @@ Cosmos.new = function(scene, parent, w, h)
     local self = Node.new(scene, parent, 0, 0, w, h, Color(0,0,0,0), false)
 
     self.star = Planet.new(scene, self, w / 2, h / 2, 128, true)
-    self.planets = nil
+    self.planets = List.new()
+
+    self.addPlanet = function(planet)
+        self.planets.append(planet)
+
+        self.planets.dump()
+    end
 
     self.spawnPlanet = function(x,y,m)
-        local planet = Planet.new(scene, self, x, y, m)
-        if self.planets == nil then
-            self.planets = List.append(self.planets, planet)
-        else
-            List.append(self.planets, planet)
-        end
+        self.planets.append(Planet.new(scene, self, x, y, m))
 
-        List.dump(self.planets)
+        self.planets.dump()
     end
 
     local baseDrawGizmo = self.drawGizmo
     self.drawGizmo = function()
         baseDrawGizmo()
 
-        local cur = self.planets
+        local cur = self.planets.head
         while cur ~= nil do
             love.graphics.setColor(palette.gizmoBlue.r, palette.gizmoBlue.g, palette.gizmoBlue.b, palette.gizmoBlue.a)
             love.graphics.line(cur.value.cx, cur.value.cy, self.star.cx, self.star.cy)
@@ -57,7 +58,7 @@ Cosmos.new = function(scene, parent, w, h)
         -- add new meteors
 
         -- update physics
-        local cur1 = self.planets
+        local cur1 = self.planets.head
         while cur1 ~= nil do
             local p1 = cur1.value
             local ax, ay = 0, 0
@@ -69,16 +70,12 @@ Cosmos.new = function(scene, parent, w, h)
             if fx == 0 and fy == 0 then
                 cur1.value.remove()
                 cur1.value = nil
-                -- cur1.value.color = palette.gizmoRed
 
                 local toRemove = cur1
                 cur1 = cur1.next
 
-                if List.len(self.planets) == 1 then
-                    self.planets = nil
-                end
-                List.remove(toRemove)
-                List.dump(self.planets)
+                self.planets.remove(toRemove)
+                self.planets.dump()
                 goto continue
             end
 
