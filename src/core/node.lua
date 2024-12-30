@@ -141,7 +141,7 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
         self.action = action
     end
 
-    scene.registerNode(self)
+    self.scene.registerNode(self)
 
     return self
 end
@@ -203,6 +203,13 @@ Node.image = function(scene, parent, x, y, w, h, image, shader, color, ignoreEve
     self.originOffsetY = self.imageData:getHeight() / 2
     self.shearX = 0
     self.shearY = 0
+
+    self.setSize = function(newW, newH)
+        self.w = newW
+        self.h = newH
+        self.scaleX = self.w / self.imageData:getWidth()
+        self.scaleY = self.h / self.imageData:getHeight()
+    end
 
     self.drawInternal = function()
         if self.shader ~= nil then

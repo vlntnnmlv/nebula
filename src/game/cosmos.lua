@@ -10,7 +10,7 @@ local function getForce(p1, p2)
     local fx, fy = 0, 0
 
     if distTrue > p2.m / 2 and distTrue < 10000 then
-        local f = 1000 * p1.m * p2.m / distSq
+        local f = 10 * p1.m * p2.m / distSq * (p2.m / (p1.m + p2.m))
 
         local dx, dy = p2.cx - p1.cx, p2.cy - p1.cy
         local a = math.atan2(dy, dx)
@@ -55,9 +55,12 @@ Cosmos.new = function(scene, parent, w, h)
     end
 
     self.updateInternal = function(dt)
-        -- add new meteors
+        local mouseX, mouseY = love.mouse.getPosition()
 
-        -- update physics
+        if self.currentPlanet ~= nil then
+            self.currentPlanet.setMass(math.sqrt(dist2(self.currentPlanet.cx, self.currentPlanet.cy, mouseX, mouseY)) * 2)
+        end
+
         local cur1 = self.planets.head
         while cur1 ~= nil do
             local p1 = cur1.value
@@ -99,6 +102,22 @@ Cosmos.new = function(scene, parent, w, h)
             ::continue::
         end
     end
+
+    self.currentPlanet = nil
+
+    self.setAction(
+        function(pressed)
+            local mouseX, mouseY = love.mouse.getPosition()
+            if pressed then
+                self.currentPlanet = Planet.new(self.scene, self, mouseX, mouseY, 20)
+            else
+                if self.currentPlanet == nil then return end
+                self.currentPlanet.setMass(math.sqrt(dist2(self.currentPlanet.cx, self.currentPlanet.cy, mouseX, mouseY)) * 2)
+                self.addPlanet(self.currentPlanet)
+                self.currentPlanet = nil
+            end
+        end
+    )
 
     return self
 end

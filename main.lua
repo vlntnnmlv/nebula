@@ -1,11 +1,8 @@
 dofile("src/core/scene.lua")
+dofile("src/core/gif.lua")
 dofile("src/game/planet.lua")
 dofile("src/game/fps.lua")
 dofile("src/game/cosmos.lua")
-
-SceneMenu = nil
-SceneGameplay = nil
-CurrentScene = nil
 
 function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest")
@@ -15,58 +12,49 @@ function love.load()
     local w, h = 1080, 720
 
     -- MENU
-    SceneMenu = Scene.new("Menu")
-    -- SceneMenu.drawGizmos = true
+    local sceneMenu = Scene.new("Menu")
+    sceneMenu.drawGizmos = true
 
-    local root = Node.new(SceneMenu, nil, 0, 0, w, h, Palette.darkest, true)
-    local overlay = Node.new(SceneMenu, root, 0, 0, w, h, Color(0.0, 0.0, 0.0, 0.0), true)
-    FPS.new(SceneMenu, overlay, 20, 15, 32, Palette.gizmoRed)
+    local root = Node.new(sceneMenu, nil, 0, 0, w, h, Palette.darkest, true)
+    local overlay = Node.new(sceneMenu, root, 0, 0, w, h, Color(0, 0, 0, 0), true)
+    FPS.new(sceneMenu, overlay, 20, 15, 32, Palette.gizmoRed)
+
+    local frames = List.new()
+    frames.append("resources/textures/flame1.png")
+    frames.append("resources/textures/flame2.png")
+
+    GIF.new(sceneMenu, overlay, 40, 40, 64, 64, frames, Color(1, 1, 1, 1), true)
 
     local menuW, menuH = 500, 400
-    local menu = Node.new(SceneMenu, root, w / 2 - menuW / 2, h / 2 - menuH / 2, menuW, menuH, Color(0,0,0,0), false)
+    local menu = Node.new(sceneMenu, root, w / 2 - menuW / 2, h / 2 - menuH / 2, menuW, menuH, Color(0,0,0,0), false)
 
-    local play = Node.text(SceneMenu, menu, "Play", w / 2, h / 2 - 32, 64, Palette.bright, false, true)
+    local play = Node.text(sceneMenu, menu, "Play", w / 2, h / 2 - 32, 64, Palette.bright, false, true)
     local function playAction(pressed)
         if pressed then return end
-        CurrentScene = SceneGameplay
+        Scene.switchScene("Gameplay")
     end
     play.setAction(playAction)
 
-    local settings = Node.text(SceneMenu, menu, "Settings", w / 2, h / 2 + 32, 64, Palette.brightest, false, true)
+    Node.text(sceneMenu, menu, "Settings", w / 2, h / 2 + 32, 64, Palette.brightest, false, true)
 
     ---- GAMEPLAY
-    SceneGameplay = Scene.new("Gameplay")
-    SceneGameplay.drawGizmos = true
+    local sceneGameplay = Scene.new("Gameplay")
+    sceneGameplay.drawGizmos = true
 
-    local root = Node.new(SceneGameplay, nil, 0, 0, w, h, Color(0.117, 0.109, 0.223, 1.0), true)
-    local overlay = Node.new(SceneGameplay, root, 0, 0, w, h, Color(0.0, 0.0, 0.0, 0.0), true)
-    FPS.new(SceneGameplay, overlay, 20, 15, 32, Palette.gizmoRed)
-    local cosmos = Cosmos.new(SceneGameplay, root, w, h)
-
-    CurrentPlanet = nil
-    cosmos.setAction(
-        function(pressed)
-            local mouseX, mouseY = love.mouse.getPosition()
-            if pressed then
-                CurrentPlanet = Planet.new(SceneGameplay, cosmos, mouseX, mouseY, 20)
-            else
-                if CurrentPlanet == nil then return end
-                CurrentPlanet.vx = CurrentPlanet.cx - mouseX
-                CurrentPlanet.vy = CurrentPlanet.cy - mouseY
-                cosmos.addPlanet(CurrentPlanet)
-            end
-        end
-    )
+    local root = Node.new(sceneGameplay, nil, 0, 0, w, h, Color(0.117, 0.109, 0.223, 1.0), true)
+    local overlay = Node.new(sceneGameplay, root, 0, 0, w, h, Color(0.0, 0.0, 0.0, 0.0), true)
+    FPS.new(sceneGameplay, overlay, 20, 15, 32, Palette.gizmoRed)
+    Cosmos.new(sceneGameplay, root, w, h)
 
     -- CurrentScene
-    CurrentScene = SceneMenu
+    Scene.switchScene("Menu")
 
     canvas = love.graphics.newCanvas(w,h)
 end
 
 function love.draw()
     love.graphics.setCanvas(canvas)
-    CurrentScene.drawAll()
+    Scene.current.drawAll()
     love.graphics.setCanvas()
 
     love.graphics.setShader(love.graphics.newShader("resources/shaders/pixelize.glsl"))
@@ -74,13 +62,13 @@ function love.draw()
 end
 
 function love.update(dt)
-    CurrentScene.updateAll(dt)
+    Scene.current.updateAll(dt)
 end
 
 function love.mousepressed(_, _, _)
-    CurrentScene.updateMouseButtonEvent(true)
+    Scene.current.updateMouseButtonEvent(true)
 end
 
 function love.mousereleased(_, _, _)
-    CurrentScene.updateMouseButtonEvent(false)
+    Scene.current.updateMouseButtonEvent(false)
 end

@@ -2,10 +2,19 @@ dofile("src/core/node.lua")
 
 Scene = {}
 
+Scene.current = nil
+Scene.data = {}
+
+Scene.switchScene = function(id)
+    Scene.current = Scene.data[id]
+end
+
 Scene.new = function(id)
     local self = {}
 
     self.id = id
+    Scene.data[id] = self
+
     self.nodes = {}
     self.nodesCount = 0
     self.focusElement = nil
@@ -36,6 +45,8 @@ Scene.new = function(id)
         if self.nodesCount == 0 then return end
 
         self.nodes[0].update(0)
+
+        if self.focusElement.action == nil then return end
 
         if pressed then
             self.pressedElement = self.focusElement
