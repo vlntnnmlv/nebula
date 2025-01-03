@@ -2,6 +2,7 @@ dofile("src/core/node.lua")
 
 Scene = {}
 
+Scene.drawGizmos = false
 Scene.current = nil
 Scene.data = {}
 
@@ -19,7 +20,6 @@ Scene.new = function(id)
     self.nodesCount = 0
     self.focusElement = nil
     self.pressedElement = nil
-    self.drawGizmos = false
 
     self.registerNode = function(node)
         node.id = self.nodesCount

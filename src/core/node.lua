@@ -63,7 +63,7 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
 
         self.drawInternal()
 
-        if self.scene.drawGizmos then
+        if Scene.drawGizmos then
             self.drawGizmo()
         end
 

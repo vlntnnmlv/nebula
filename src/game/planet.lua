@@ -9,7 +9,7 @@ Planet.new = function(scene, parent, x, y, m, isStar)
         texture = "star"
         shader = "shine"
     else
-        texture = "meteor"
+        texture = "planet"
         shader = "chrome"
     end
 
