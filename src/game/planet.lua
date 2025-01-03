@@ -22,8 +22,6 @@ Planet.new = function(scene, parent, x, y, m, isStar)
     self.vy = 0
     self.ax = 0
     self.ay = 0
-
-    self.m = m
     self.time = 0
 
     -- self.massText = Node.text(self.scene, self, self.m, self.cx, self.cy, 32, Palette.gizmoBlue, true, false)
@@ -31,11 +29,14 @@ Planet.new = function(scene, parent, x, y, m, isStar)
 
     self.setMass = function(newM)
         self.m = newM
+        self.r = math.pow(self.m, 1/3)
         -- self.massText.text = self.m
-        self.x = self.cx - self.m / 2
-        self.y = self.cy - self.m / 2
-        self.setSize(newM, newM)
+        self.x = self.cx - self.r / 2
+        self.y = self.cy - self.r / 2
+        self.setSize(self.r, self.r)
     end
+
+    self.setMass(m)
 
     if self.isStar then
         self.shaderParameters.append({ name = "iTime", value = 0})
@@ -52,8 +53,8 @@ Planet.new = function(scene, parent, x, y, m, isStar)
 
         -- self.massText.text = self.m
 
-        self.x = self.cx - self.m / 2 -- rect coordinates for rendering
-        self.y = self.cy - self.m / 2 -- rect coordinates for rendering
+        self.x = self.cx - self.r / 2 -- rect coordinates for rendering
+        self.y = self.cy - self.r / 2 -- rect coordinates for rendering
 
         self.time = self.time + dt
         if self.isStar then

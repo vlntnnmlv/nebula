@@ -1,8 +1,4 @@
 dofile("src/core/scene.lua")
-dofile("src/core/gif.lua")
-dofile("src/game/planet.lua")
-dofile("src/game/fps.lua")
-dofile("src/game/cosmos.lua")
 
 SCREEN_WIDTH, SCREEN_HEIGHT = 1080, 720
 
@@ -11,26 +7,24 @@ function love.load()
     love.graphics.setFont(love.graphics.newFont("resources/fonts/alagard.ttf", 32))
     love.mouse.setCursor(love.mouse.newCursor(love.image.newImageData("resources/textures/cursor.png"), 0, 0))
 
-
-    -- MENU
+    -- SCENES
+    Scene.drawGizmos = true
     dofile("src/game/scenes/sceneMenu.lua")
-
-    -- GAMEPLAY
     dofile("src/game/scenes/sceneGameplay.lua")
 
-    -- CurrentScene
     Scene.switchScene("Menu")
 
-    canvas = love.graphics.newCanvas(SCREEN_WIDTH,SCREEN_HEIGHT)
+    -- TEMP: TODO: Move canvas+shader logic to Node
+    Canvas = love.graphics.newCanvas(SCREEN_WIDTH,SCREEN_HEIGHT)
 end
 
 function love.draw()
-    love.graphics.setCanvas(canvas)
+    love.graphics.setCanvas(Canvas)
     Scene.current.drawAll()
     love.graphics.setCanvas()
 
     -- love.graphics.setShader(love.graphics.newShader("resources/shaders/pixelize.glsl"))
-    love.graphics.draw(canvas, 0, 0)
+    love.graphics.draw(Canvas, 0, 0)
 end
 
 function love.update(dt)

@@ -1,3 +1,5 @@
+dofile("src/game/fps.lua")
+
 local sceneMenu = Scene.new("Menu")
 
 local root = Node.new(sceneMenu, nil, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, Palette.darkest, true)

@@ -6,7 +6,7 @@ local function getValueString(value)
             return value.toString(value)
         end
     end
-    
+
     return tostring(value)
 end
 
@@ -59,7 +59,7 @@ List.new = function()
 
     self.remove = function(node)
         local result = node.next
-    
+
         if node == self.head then
             self.head = node.next
         end
@@ -71,17 +71,16 @@ List.new = function()
         if node.prev ~= nil then
             node.prev.next = node.next
         end
-    
+
         if node.next ~= nil then
             node.next.prev = node.prev
         end
 
-    
         node.prev = nil
         node.next = nil
         node.value = nil
         node = nil
-        
+
         self.len = self.len - 1
 
         return result
