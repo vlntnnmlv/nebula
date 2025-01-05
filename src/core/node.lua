@@ -1,5 +1,6 @@
 dofile("src/core/palette.lua")
 dofile("src/core/list.lua")
+dofile("src/core/shader.lua")
 
 Node = {}
 
@@ -192,9 +193,7 @@ Node.image = function(scene, parent, x, y, w, h, image, shader, color, ignoreEve
     self.imageData = love.image.newImageData(image)
     self.image = love.graphics.newImage(self.imageData)
 
-    if shader ~= nil then
-        self.shader = love.graphics.newShader(shader)
-    end
+    self.shader = shader
 
     self.scaleX = self.w / self.imageData:getWidth()
     self.scaleY = self.h / self.imageData:getHeight()
@@ -213,22 +212,15 @@ Node.image = function(scene, parent, x, y, w, h, image, shader, color, ignoreEve
 
     self.drawInternal = function()
         if self.shader ~= nil then
-            love.graphics.setShader(self.shader)
+            self.shader.setActive(true)
         end
 
         love.graphics.draw(self.image, self.x + self.w / 2, self.y + self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
-        love.graphics.setShader()
+        self.shader.setActive(false)
     end
 
-    self.shaderParameters = List.new()
     self.updateInternal = function(dt)
-        if self.shaderParameters.len ~= 0 and self.shader ~= nil then
-            self.shaderParameters.apply(
-                function(paramater)
-                    self.shader:send(paramater.name, paramater.value)
-                end
-            )
-        end
+        if self.shader ~= nil then self.shader.update() end
     end
 
     self.rotate = function(rotation)

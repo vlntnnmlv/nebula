@@ -8,11 +8,12 @@ function love.load()
     love.mouse.setCursor(love.mouse.newCursor(love.image.newImageData("resources/textures/cursor.png"), 0, 0))
 
     -- SCENES
-    Scene.drawGizmos = true
+    -- Scene.drawGizmos = true
     dofile("src/game/scenes/sceneMenu.lua")
     dofile("src/game/scenes/sceneGameplay.lua")
+    dofile("src/game/scenes/sceneTestShader.lua")
 
-    Scene.switchScene("Menu")
+    Scene.switchScene("Test")
 
     -- TEMP: TODO: Move canvas+shader logic to Node
     Canvas = love.graphics.newCanvas(SCREEN_WIDTH,SCREEN_HEIGHT)
@@ -26,6 +27,14 @@ function love.draw()
     -- love.graphics.setShader(love.graphics.newShader("resources/shaders/pixelize.glsl"))
     love.graphics.draw(Canvas, 0, 0)
 end
+
+function love.keyreleased(key)
+    if key == "escape" then
+       love.event.quit()
+    elseif key == "p" then
+        love.graphics.captureScreenshot("screenshot"..os.time()..".png")
+    end
+ end
 
 function love.update(dt)
     Scene.current.updateAll(dt)

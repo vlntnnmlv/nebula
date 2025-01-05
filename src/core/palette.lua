@@ -2,6 +2,10 @@ function Color(r,g,b,a)
     return { r = r, g = g, b = b, a = a}
 end
 
+function RandomColor()
+    return { r = love.math.random(), g = love.math.random(), b = love.math.random(), a = 1.0}
+end
+
 Palette = {
     brightest = Color(0.968, 0.623, 0.474, 1.0),
     bright    = Color(0.968, 0.815, 0.541, 1.0),

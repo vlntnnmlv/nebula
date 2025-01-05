@@ -2,18 +2,20 @@ dofile("src/core/node.lua")
 
 Planet = {}
 
-Planet.new = function(scene, parent, x, y, m, isStar)
+Planet.new = function(scene, parent, x, y, r, isStar)
     local texture = nil
-    local shader = nil
+    local shaderName = nil
     if isStar then
         texture = "star"
-        shader = "shine"
+        shaderName = "shine"
     else
         texture = "planet"
-        shader = "chrome"
+        shaderName = "shine" -- "chrome"
     end
 
-    local self = Node.image(scene, parent, x - m / 2, y - m / 2, m, m, "resources/textures/"..texture..".png", "resources/shaders/"..shader..".glsl", Color(1,1,1,1), true)
+    local shader = Shader.new("resources/shaders/"..shaderName..".glsl")
+
+    local self = Node.image(scene, parent, x - r / 2, y - r / 2, r * 2, r * 2, "resources/textures/"..texture..".png", shader, RandomColor(), true)
     self.isStar = isStar
 
     self.cx = x -- actual center of the planet
@@ -27,19 +29,20 @@ Planet.new = function(scene, parent, x, y, m, isStar)
     -- self.massText = Node.text(self.scene, self, self.m, self.cx, self.cy, 32, Palette.gizmoBlue, true, false)
     self.rotationSpeed = love.math.random() * 2
 
-    self.setMass = function(newM)
-        self.m = newM
-        self.r = math.pow(self.m, 1/3)
+    self.setRadius = function(newR)
+        self.r = newR
+        self.m = math.pow(self.r, 3)
         -- self.massText.text = self.m
         self.x = self.cx - self.r / 2
         self.y = self.cy - self.r / 2
         self.setSize(self.r, self.r)
     end
 
-    self.setMass(m)
+    self.setRadius(r)
 
     if self.isStar then
-        self.shaderParameters.append({ name = "iTime", value = 0})
+        self.shader.setParameter("iTime", function() return self.time end)
+        -- self.shaderParameters.append({ name = "iTime", value = 0})
     end
 
     local updateInternalBase = self.updateInternal
@@ -57,9 +60,9 @@ Planet.new = function(scene, parent, x, y, m, isStar)
         self.y = self.cy - self.r / 2 -- rect coordinates for rendering
 
         self.time = self.time + dt
-        if self.isStar then
-            self.shaderParameters.head.value.value = self.time
-        end
+        -- if self.isStar then
+        --     self.shaderParameters.head.value.value = self.time
+        -- end
 
         updateInternalBase()
     end

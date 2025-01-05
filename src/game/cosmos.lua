@@ -9,7 +9,7 @@ local function getForce(p1, p2)
     local distTrue = math.sqrt(distSq)
     local fx, fy = 0, 0
 
-    if distTrue > p2.r / 2 and distTrue < 10000 then
+    if distTrue > p2.r / 2 + p1.r / 2 and distTrue < 10000 then
         local fBig = 100 * p1.m * p2.m / distSq * (p2.m / (p1.m + p2.m))
         local fToApply = fBig / p1.m
 
@@ -28,7 +28,8 @@ Cosmos = {}
 Cosmos.new = function(scene, parent, w, h)
     local self = Node.new(scene, parent, 0, 0, w, h, Color(0,0,0,0), false)
 
-    self.star = Planet.new(scene, self, w / 2, h / 2, 1000000, true)
+    self.star = Planet.new(scene, self, w / 2, h / 2, 64, true)
+    self.star.m = 10e5
     self.planets = List.new()
 
     self.addPlanet = function(planet)
@@ -59,7 +60,7 @@ Cosmos.new = function(scene, parent, w, h)
         local mouseX, mouseY = love.mouse.getPosition()
 
         if self.currentPlanet ~= nil then
-            self.currentPlanet.setMass(math.sqrt(dist2(self.currentPlanet.cx, self.currentPlanet.cy, mouseX, mouseY)) * 2)
+            self.currentPlanet.setRadius(math.sqrt(dist2(self.currentPlanet.cx, self.currentPlanet.cy, mouseX, mouseY)))
         end
 
         local cur1 = self.planets.head
@@ -110,10 +111,10 @@ Cosmos.new = function(scene, parent, w, h)
         function(pressed)
             local mouseX, mouseY = love.mouse.getPosition()
             if pressed then
-                self.currentPlanet = Planet.new(self.scene, self, mouseX, mouseY, 20, false)
+                self.currentPlanet = Planet.new(self.scene, self, mouseX, mouseY, 10, false)
             else
                 if self.currentPlanet == nil then return end
-                self.currentPlanet.setMass(math.sqrt(10 * dist2(self.currentPlanet.cx, self.currentPlanet.cy, mouseX, mouseY)) * 2)
+                self.currentPlanet.setRadius(math.sqrt(dist2(self.currentPlanet.cx, self.currentPlanet.cy, mouseX, mouseY)))
                 self.addPlanet(self.currentPlanet)
                 self.currentPlanet = nil
             end

@@ -46,7 +46,7 @@ Scene.new = function(id)
 
         self.nodes[0].update(0)
 
-        if self.focusElement.action == nil then return end
+        if self.focusElement == nil or self.focusElement.action == nil then return end
 
         if pressed then
             self.pressedElement = self.focusElement
