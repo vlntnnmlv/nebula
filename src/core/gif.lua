@@ -2,8 +2,8 @@ dofile("src/core/node.lua")
 
 GIF = {}
 
-GIF.new = function(scene, parent, x, y, w, h, frames, color, ignoreEvents)
-    local self = Node.image(scene, parent, x, y, w, h, frames.head.value, nil, color, ignoreEvents)
+GIF.new = function(scene, parent, x, y, w, h, frames)
+    local self = Node.image(scene, parent, x, y, w, h, frames.head.value)
 
     self.imagesData = List.new()
     self.images = List.new()

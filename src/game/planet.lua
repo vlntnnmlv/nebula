@@ -15,7 +15,11 @@ Planet.new = function(scene, parent, x, y, r, isStar)
 
     local shader = Shader.new("resources/shaders/"..shaderName..".glsl")
 
-    local self = Node.image(scene, parent, x - r / 2, y - r / 2, r * 2, r * 2, "resources/textures/"..texture..".png", shader, RandomColor(), true)
+    local self = Node.image(scene, parent, x - r / 2, y - r / 2, r * 2, r * 2, "resources/textures/"..texture..".png")
+    self.setShader(shader)
+    self.setColor(RandomColor())
+    self.ignoreEvents = true
+
     self.isStar = isStar
 
     self.cx = x -- actual center of the planet
@@ -26,13 +30,11 @@ Planet.new = function(scene, parent, x, y, r, isStar)
     self.ay = 0
     self.time = 0
 
-    -- self.massText = Node.text(self.scene, self, self.m, self.cx, self.cy, 32, Palette.gizmoBlue, true, false)
     self.rotationSpeed = love.math.random() * 2
 
     self.setRadius = function(newR)
         self.r = newR
         self.m = math.pow(self.r, 3)
-        -- self.massText.text = self.m
         self.x = self.cx - self.r / 2
         self.y = self.cy - self.r / 2
         self.setSize(self.r, self.r)
@@ -40,10 +42,7 @@ Planet.new = function(scene, parent, x, y, r, isStar)
 
     self.setRadius(r)
 
-    if self.isStar then
-        self.shader.setParameter("iTime", function() return self.time end)
-        -- self.shaderParameters.append({ name = "iTime", value = 0})
-    end
+    self.shader.setParameter("iTime", function() return self.time end)
 
     local updateInternalBase = self.updateInternal
     self.updateInternal = function(dt)
@@ -54,15 +53,10 @@ Planet.new = function(scene, parent, x, y, r, isStar)
         self.cx = self.cx + self.vx * dt
         self.cy = self.cy + self.vy * dt
 
-        -- self.massText.text = self.m
-
         self.x = self.cx - self.r / 2 -- rect coordinates for rendering
         self.y = self.cy - self.r / 2 -- rect coordinates for rendering
 
         self.time = self.time + dt
-        -- if self.isStar then
-        --     self.shaderParameters.head.value.value = self.time
-        -- end
 
         updateInternalBase()
     end

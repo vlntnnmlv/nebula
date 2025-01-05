@@ -4,22 +4,19 @@ dofile("src/core/shader.lua")
 
 Node = {}
 
-Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
+Node.new = function(scene, parent, x, y, w, h)
     local self = {}
 
     self.scene = scene
     self.parent = parent
     self.children = List.new()
     self.hovered = false
+    self.ignoreEvents = false
+    self.color = Color(1, 1, 1, 1)
+    self.shader = nil
 
     if self.parent ~= nil then
         self.parent.linkChild(self)
-    end
-
-    if ignoreEvents == nil then
-        self.ignoreEvents = false
-    else
-        self.ignoreEvents = ignoreEvents
     end
 
     self.x = x
@@ -27,10 +24,12 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     self.w = w
     self.h = h
 
-    if color == nil then
-        self.color = Color(1, 1, 1, 1)
-    else
+    self.setColor = function(color)
         self.color = color
+    end
+
+    self.setShader = function(shader)
+        self.shader = shader
     end
 
     self.linkChild = function(child)
@@ -42,7 +41,7 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     end
 
     self.getParentID = function()
-        if self.parent == nil then return "nil" end
+        if self.parent == nil then return nil end
 
         return self.parent.id
     end
@@ -61,8 +60,15 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
         end
 
         love.graphics.setColor(actualColor.r, actualColor.g, actualColor.b, actualColor.a)
+        if self.shader ~= nil then
+            self.shader.setActive(true)
+        end
 
         self.drawInternal()
+
+        if self.shader ~= nil then
+            self.shader.setActive(false)
+        end
 
         if Scene.drawGizmos then
             self.drawGizmo()
@@ -97,6 +103,8 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     self.updateInternal = function(dt) end
 
     self.update = function(dt)
+        if self.shader ~= nil then self.shader.update() end
+
         self.updateInternal(dt)
 
         return self.updateState(dt)
@@ -147,8 +155,8 @@ Node.new = function(scene, parent, x, y, w, h, color, ignoreEvents)
     return self
 end
 
-Node.text = function(scene, parent, text, cx, cy, fontSize, color, ignoreEvents, incept)
-    local self = Node.new(scene, parent, cx, cy, 0, 0, color, ignoreEvents)
+Node.text = function(scene, parent, text, cx, cy, fontSize, incept)
+    local self = Node.new(scene, parent, cx, cy, 0, 0)
 
     self.restore = function()
         self.w = self.font:getWidth(self.text)
@@ -158,7 +166,7 @@ Node.text = function(scene, parent, text, cx, cy, fontSize, color, ignoreEvents,
 
         if self.incept then
             if self.incepted == nil then
-                self.incepted = Node.text(self.scene, self, text, cx + 2, cy + 2, fontSize - 1, color, true, false)
+                self.incepted = Node.text(self.scene, self, text, cx + 2, cy + 2, fontSize - 1, false)
             else
                 self.incepted.setText(self.text)
             end
@@ -187,13 +195,11 @@ Node.text = function(scene, parent, text, cx, cy, fontSize, color, ignoreEvents,
     return self
 end
 
-Node.image = function(scene, parent, x, y, w, h, image, shader, color, ignoreEvents)
-    local self = Node.new(scene, parent, x, y, w, h, color, ignoreEvents)
+Node.image = function(scene, parent, x, y, w, h, image)
+    local self = Node.new(scene, parent, x, y, w, h)
 
     self.imageData = love.image.newImageData(image)
     self.image = love.graphics.newImage(self.imageData)
-
-    self.shader = shader
 
     self.scaleX = self.w / self.imageData:getWidth()
     self.scaleY = self.h / self.imageData:getHeight()
@@ -211,17 +217,12 @@ Node.image = function(scene, parent, x, y, w, h, image, shader, color, ignoreEve
     end
 
     self.drawInternal = function()
-        if self.shader ~= nil then
-            self.shader.setActive(true)
-        end
-
         love.graphics.draw(self.image, self.x + self.w / 2, self.y + self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
-        self.shader.setActive(false)
     end
 
-    self.updateInternal = function(dt)
-        if self.shader ~= nil then self.shader.update() end
-    end
+    -- self.updateInternal = function(dt)
+    --     if self.shader ~= nil then self.shader.update() end
+    -- end
 
     self.rotate = function(rotation)
         self.rotation = self.rotation + rotation

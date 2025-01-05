@@ -26,7 +26,9 @@ end
 Cosmos = {}
 
 Cosmos.new = function(scene, parent, w, h)
-    local self = Node.new(scene, parent, 0, 0, w, h, Color(0,0,0,0), false)
+    local self = Node.new(scene, parent, 0, 0, w, h)
+    self.setColor(Color(0,0,0,0))
+    self.ignoreEvents = false
 
     self.star = Planet.new(scene, self, w / 2, h / 2, 64, true)
     self.star.m = 10e5

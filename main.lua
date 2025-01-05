@@ -13,7 +13,7 @@ function love.load()
     dofile("src/game/scenes/sceneGameplay.lua")
     dofile("src/game/scenes/sceneTestShader.lua")
 
-    Scene.switchScene("Test")
+    Scene.switchScene("Gameplay")
 
     -- TEMP: TODO: Move canvas+shader logic to Node
     Canvas = love.graphics.newCanvas(SCREEN_WIDTH,SCREEN_HEIGHT)
