@@ -7,7 +7,26 @@ Scene.current = nil
 Scene.data = {}
 
 Scene.switchScene = function(id)
-    Scene.current = Scene.data[id]
+    if Scene.data[id] == nil then
+        print("No such scene!")
+    else
+        Scene.current = Scene.data[id]
+    end
+end
+
+Scene.loadScenes = function(scenesDir)
+    for _, scene in pairs(love.filesystem.getDirectoryItems(scenesDir)) do
+        dofile(scenesDir.."/"..scene)
+    end
+
+    local backupScene = Scene.new("BackupScene404")
+    local root = Node.new(backupScene, nil, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+    Node.text(backupScene, root, "404", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 32, 64, false)
+        .setColor(Palette.gizmoRed)
+    Node.text(backupScene, root, "Set a scene using Scene.switchScene(sceneID)", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 32, 24, false)
+        .setColor(Palette.gizmoRed)
+
+    Scene.current = backupScene
 end
 
 Scene.new = function(id)

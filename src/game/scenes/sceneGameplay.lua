@@ -1,4 +1,5 @@
 dofile("src/game/cosmos.lua")
+dofile("src/game/fps.lua")
 
 local sceneGameplay = Scene.new("Gameplay")
 
@@ -13,11 +14,11 @@ overlay.setColor(Color(1.0, 1.0, 1.0, 0.0))
 overlay.ignoreEvents = true
 
 FPS.new(sceneGameplay, overlay, 20, 15, 32).setColor(Palette.gizmoRed)
-local backButton =  Node.text(sceneGameplay, overlay, "Menu", SCREEN_WIDTH - 50, SCREEN_HEIGHT - 30, 32, true)
-backButton.setColor(Palette.brightest)
+-- local backButton =  Node.text(sceneGameplay, overlay, "Menu", SCREEN_WIDTH - 50, SCREEN_HEIGHT - 30, 32, true)
+-- backButton.setColor(Palette.brightest)
 
-local function backAction(pressed)
-    if pressed then return end
-    Scene.switchScene("Menu")
-end
-backButton.setAction(backAction)
+-- local function backAction(pressed)
+--     if pressed then return end
+--     Scene.switchScene("Menu")
+-- end
+-- backButton.setAction(backAction)

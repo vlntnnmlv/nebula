@@ -3,7 +3,7 @@ dofile("src/core/node.lua")
 FPS = {}
 
 FPS.new = function(scene, parent, cx, cy, fontSize)
-    local self = Node.text(scene, parent, "", cx, cy, fontSize, false)
+    local self = Node.text(scene, parent, 0, cx, cy, fontSize, false)
     self.ignoreEvents = true
 
     self.updateInternal = function(dt)

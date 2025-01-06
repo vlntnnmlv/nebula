@@ -14,22 +14,23 @@ Node.new = function(scene, parent, x, y, w, h)
     self.ignoreEvents = false
     self.color = Color(1, 1, 1, 1)
     self.shader = nil
-
+    
     if self.parent ~= nil then
         self.parent.linkChild(self)
     end
-
+    
     self.x = x
     self.y = y
     self.w = w
     self.h = h
-
+    
     self.setColor = function(color)
         self.color = color
     end
-
+    
     self.setShader = function(shader)
         self.shader = shader
+        self.canvas = love.graphics.newCanvas(self.w, self.h)
     end
 
     self.linkChild = function(child)
@@ -51,32 +52,61 @@ Node.new = function(scene, parent, x, y, w, h)
     end
 
     self.draw = function()
-        local actualColor = Color(self.color.r, self.color.g, self.color.b, self.color.a)
-        if self.hovered then
-            actualColor.r = actualColor.r - 0.1
-            actualColor.g = actualColor.g - 0.1
-            actualColor.b = actualColor.b - 0.1
-            actualColor.a = actualColor.a
-        end
+        -- local actualColor = Color(self.color.r, self.color.g, self.color.b, self.color.a)
+        -- if self.hovered then
+        --     actualColor.r = actualColor.r - 0.1
+        --     actualColor.g = actualColor.g - 0.1
+        --     actualColor.b = actualColor.b - 0.1
+        --     actualColor.a = actualColor.a
+        -- end
 
-        love.graphics.setColor(actualColor.r, actualColor.g, actualColor.b, actualColor.a)
+        love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
+
         if self.shader ~= nil then
             self.shader.setActive(true)
         end
 
+        -- if self.canvas ~= nil then
+        --     love.graphics.setCanvas(self.canvas)
+        --     love.graphics.clear()
+        -- elseif self.parent ~= nil and self.parent.canvas ~= nil then
+        --     love.graphics.setCanvas(self.parent.canvas)
+        -- end
+
         self.drawInternal()
+
+        if Scene.drawGizmos then
+            self.drawGizmo()
+            -- reset color after drawing gizmo
+            love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
+        end
+
+        -- local oldCanvas = nil
+        -- if self.canvas ~= nil then
+        --     oldCanvas = love.graphics.getCanvas()
+        --     love.graphics.setCanvas(self.canvas)
+        --     love.graphics.clear()
+        -- end
+
+        self.drawChildren()
+
+        -- if self.parent ~= nil and self.parent.canvas ~= nil then
+        --     love.graphics.setCanvas(self.parent.canvas)
+        -- end
+
+        -- if oldCanvas ~= nil then
+        --     love.graphics.setCanvas(oldCanvas)
+        -- end
+
+        -- if self.canvas ~= nil then
+        --     love.graphics.draw(self.canvas, self.x, self.y)
+        -- end
 
         if self.shader ~= nil then
             self.shader.setActive(false)
         end
 
-        if Scene.drawGizmos then
-            self.drawGizmo()
-        end
-
-        love.graphics.setColor(actualColor.r, actualColor.g, actualColor.b, actualColor.a)
-
-        self.drawChildren()
+        -- love.graphics.setCanvas()
     end
 
     self.drawGizmo = function()
@@ -156,7 +186,11 @@ Node.new = function(scene, parent, x, y, w, h)
 end
 
 Node.text = function(scene, parent, text, cx, cy, fontSize, incept)
-    local self = Node.new(scene, parent, cx, cy, 0, 0)
+    -- TODO: Clean this mess, why we are calculating this two times?
+    local font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
+    local w = font:getWidth(text)
+    local h = font:getHeight(text)
+    local self = Node.new(scene, parent, cx, cy, w, h)
 
     self.restore = function()
         self.w = self.font:getWidth(self.text)
@@ -174,7 +208,7 @@ Node.text = function(scene, parent, text, cx, cy, fontSize, incept)
     end
 
     self.text = text
-    self.font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
+    self.font = font
     self.incept = incept
     self.cx = cx
     self.cy = cy
