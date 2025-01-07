@@ -13,14 +13,14 @@ Node.new = function(scene, parent, x, y, w, h)
 
     self.color = Color(1, 1, 1, 1)
     self.shader = Shader.new("resources/shaders/color.glsl")
-    
+
     self.ignoreEvents = false
     self.hovered = false
-    
+
     if self.parent ~= nil then
         self.parent.linkChild(self)
     end
-    
+
     self.w = w
     self.h = h
     self.x = x
@@ -29,7 +29,11 @@ Node.new = function(scene, parent, x, y, w, h)
     self.canvas = love.graphics.newCanvas(self.w, self.h)
 
     self.setColor = function(color)
-        self.shader.setParameter("iColor", { color.r, color.g, color.b, color.a })
+        if self.shader ~= nil then
+            self.shader.setParameter("iColor", { color.r, color.g, color.b, color.a })
+        else
+            self.color = color
+        end
     end
 
     self.setScale = function(newsx, newsy)
@@ -60,7 +64,7 @@ Node.new = function(scene, parent, x, y, w, h)
     end
 
     self.draw = function()
-        -- love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
+        love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
 
         love.graphics.setCanvas(self.canvas)
         if self.shader ~= nil then
@@ -74,11 +78,12 @@ Node.new = function(scene, parent, x, y, w, h)
             love.graphics.draw(self.canvas, self.x, self.y)
         end
 
-        self.drawChildren()
-
         if self.shader ~= nil then
             self.shader.setActive(false)
         end
+
+        self.drawChildren()
+
 
         if Scene.drawGizmos then
             self.drawGizmo()
@@ -97,12 +102,19 @@ Node.new = function(scene, parent, x, y, w, h)
     end
 
     self.drawInternal = function()
+        -- love.graphics.polygon(
+        --     "fill",
+        --     self.x, self.y,
+        --     self.x + self.w - 1, self.y,
+        --     self.x + self.w - 1, self.y + self.h - 1,
+        --     self.x, self.y + self.h - 1
+        -- )
         love.graphics.polygon(
             "fill",
-            self.x, self.y,
-            self.x + self.w - 1, self.y,
-            self.x + self.w - 1, self.y + self.h - 1,
-            self.x, self.y + self.h - 1
+            0, 0,
+            0 + self.w - 1, 0,
+            0 + self.w - 1, 0 + self.h - 1,
+            0, 0 + self.h - 1
         )
     end
 
@@ -169,6 +181,8 @@ Node.text = function(scene, parent, text, cx, cy, fontSize, incept)
     local h = font:getHeight(text)
     local self = Node.new(scene, parent, cx, cy, w, h)
 
+    self.shader = nil
+
     self.restore = function()
         self.w = self.font:getWidth(self.text)
         self.h = self.font:getBaseline(self.text)
@@ -200,7 +214,7 @@ Node.text = function(scene, parent, text, cx, cy, fontSize, incept)
 
     self.drawInternal = function()
         love.graphics.setFont(self.font)
-        love.graphics.print(self.text, self.x, self.y)
+        love.graphics.print(self.text, 0, 0)
     end
 
     return self
@@ -223,12 +237,19 @@ Node.image = function(scene, parent, x, y, w, h, image)
     self.setSize = function(newW, newH)
         self.w = newW
         self.h = newH
+
+        local cw, ch = 1, 1
+        if self.w > 1 then cw = self.w end
+        if self.h > 1 then ch = self.h end
+
+        self.canvas:release()
+        self.canvas = love.graphics.newCanvas(cw, ch)
         self.scaleX = self.w / self.imageData:getWidth()
         self.scaleY = self.h / self.imageData:getHeight()
     end
 
     self.drawInternal = function()
-        love.graphics.draw(self.image, self.x + self.w / 2, self.y + self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
+        love.graphics.draw(self.image, 0 + self.w / 2, 0 + self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
     end
 
     -- self.updateInternal = function(dt)

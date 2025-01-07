@@ -1,6 +1,7 @@
 #pragma language glsl3
 
 uniform float iTime;
+uniform vec4 iColor;
 
 vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
 {
@@ -13,7 +14,7 @@ vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
 
     v = smoothstep(-1.0, v, dist * 2.0) * smoothstep(0.5, 0.0, dist);
 
-    vec4 result = texcolor * color * v;// vec4(v,v,v, 0.5); // texcolor * color + 
+    vec4 result = iColor * color * v;
 
     if (texcolor.a <= 0.0 || v >= 1.0)
     {

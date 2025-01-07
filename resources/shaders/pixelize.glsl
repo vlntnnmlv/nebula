@@ -1,9 +1,12 @@
 #pragma language glsl3
 
 uniform float iScale;
+uniform vec4 iColor;
 
 vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
 {
+    iColor;
+
     vec2 steps = texture_coords * iScale;
 
     vec2 t = vec2(int(steps.x) / iScale, int(steps.y) / iScale);

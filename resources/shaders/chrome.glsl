@@ -1,9 +1,11 @@
 #pragma language glsl3
 
 uniform float iTime;
+uniform vec4 iColor;
 
 vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
 {
+    iColor;
     vec4 texcolor = Texel(tex, texture_coords);
 
     vec2 size = textureSize(tex, 1);

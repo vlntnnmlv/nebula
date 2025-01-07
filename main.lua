@@ -12,7 +12,7 @@ end
 function love.load(args)
     love.graphics.setDefaultFilter("nearest", "nearest")
     love.graphics.setBlendMode("alpha", "alphamultiply")
-    love.graphics.setBackgroundColor(0,0,0,0)
+    love.graphics.setBackgroundColor(1,1,1,1)
 
     love.graphics.setFont(love.graphics.newFont("resources/fonts/alagard.ttf", 32))
     love.mouse.setCursor(love.mouse.newCursor(love.image.newImageData("resources/textures/cursor.png"), 0, 0))

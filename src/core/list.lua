@@ -28,20 +28,23 @@ List.new = function()
     self.len = 0
 
     self.dump = function()
-        io.write("L<"..self.len.."> ")
+        local stringView = ""
+
+        stringView = stringView.."L<"..self.len.."> "
         if self.head == nil then io.write("nil\n") return end
 
         local cur = self.head
-        io.write("nil<-")
+        stringView = stringView.."nil<-"
         while cur ~= nil do
             if cur.next == nil then
-                io.write(getValueString(cur.value).."->")
+                stringView = stringView..getValueString(cur.value).."->"
             else
-                io.write(getValueString(cur.value).."<->")
+                stringView = stringView..getValueString(cur.value).."<->"
             end
             cur = cur.next
         end
-        io.write("nil\n")
+        stringView = stringView.."nil"
+        Logger.notice(stringView)
     end
 
     self.append = function(value)
