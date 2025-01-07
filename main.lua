@@ -22,6 +22,7 @@ function love.load(args)
 
     Scene.switchScene(argsResults.scene)
 end
+
 function love.draw()
     Scene.current.drawAll()
 end
@@ -31,8 +32,18 @@ function love.keyreleased(key)
         exit()
     elseif key == "p" then
         love.graphics.captureScreenshot("screenshot"..os.time()..".png")
+    elseif key == "-" then
+        Scene.current.nodes[0].setScale(
+            Scene.current.nodes[0].sx - 0.01,
+            Scene.current.nodes[0].sy - 0.01
+        )
+    elseif key == "=" then
+        Scene.current.nodes[0].setScale(
+            Scene.current.nodes[0].sx + 0.01,
+            Scene.current.nodes[0].sy + 0.01
+        )
     end
- end
+end
 
 function love.update(dt)
     Scene.current.updateAll(dt)

@@ -14,20 +14,43 @@ Node.new = function(scene, parent, x, y, w, h)
     self.ignoreEvents = false
     self.color = Color(1, 1, 1, 1)
     self.shader = nil
-    
+
     if self.parent ~= nil then
         self.parent.linkChild(self)
     end
-    
+
+
+    self.updateRealSize = function()
+        self.rx = ((x - self.px) * self.sx)
+        self.ry = ((y - self.py) * self.sy)
+
+        self.rw = self.w * self.sx
+        self.rh = self.h * self.sy
+
+        self.children.apply(
+            function(child)
+                child.setScale(self.sx, self.sy)
+            end
+        )
+    end
+
     self.x = x
     self.y = y
     self.w = w
     self.h = h
-    
+    self.sx = 1
+    self.sy = 1
+    self.updateRealSize()
+
     self.setColor = function(color)
         self.color = color
     end
-    
+
+    self.setScale = function(newsx, newsy)
+        self.sx = newsx
+        self.sy = newsy
+    end
+
     self.setShader = function(shader)
         self.shader = shader
         self.canvas = love.graphics.newCanvas(self.w, self.h)
@@ -59,6 +82,7 @@ Node.new = function(scene, parent, x, y, w, h)
         --     actualColor.b = actualColor.b - 0.1
         --     actualColor.a = actualColor.a
         -- end
+        self.updateRealSize()
 
         love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
         if self.shader ~= nil then
@@ -112,10 +136,10 @@ Node.new = function(scene, parent, x, y, w, h)
         love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
         love.graphics.polygon(
             "line",
-            self.x, self.y,
-            self.x + self.w, self.y,
-            self.x + self.w, self.y + self.h,
-            self.x, self.y + self.h
+            self.rx, self.ry,
+            self.rx + self.rw, self.ry,
+            self.rx + self.rw, self.ry + self.rh,
+            self.rx, self.ry + self.rh
         )
     end
 
