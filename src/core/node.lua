@@ -10,39 +10,26 @@ Node.new = function(scene, parent, x, y, w, h)
     self.scene = scene
     self.parent = parent
     self.children = List.new()
-    self.hovered = false
-    self.ignoreEvents = false
-    self.color = Color(1, 1, 1, 1)
-    self.shader = nil
 
+    self.color = Color(1, 1, 1, 1)
+    self.shader = Shader.new("resources/shaders/color.glsl")
+    
+    self.ignoreEvents = false
+    self.hovered = false
+    
     if self.parent ~= nil then
         self.parent.linkChild(self)
     end
-
-    self.updateRealSize = function()
-        self.rx = x * self.sx
-        self.ry = y * self.sy
-
-        self.rw = self.w * self.sx
-        self.rh = self.h * self.sy
-
-        self.children.apply(
-            function(child)
-                child.setScale(self.sx, self.sy)
-            end
-        )
-    end
-
-    self.x = x
-    self.y = y
+    
     self.w = w
     self.h = h
-    self.sx = 1
-    self.sy = 1
-    self.updateRealSize()
+    self.x = x
+    self.y = y
+
+    self.canvas = love.graphics.newCanvas(self.w, self.h)
 
     self.setColor = function(color)
-        self.color = color
+        self.shader.setParameter("iColor", { color.r, color.g, color.b, color.a })
     end
 
     self.setScale = function(newsx, newsy)
@@ -52,7 +39,6 @@ Node.new = function(scene, parent, x, y, w, h)
 
     self.setShader = function(shader)
         self.shader = shader
-        self.canvas = love.graphics.newCanvas(self.w, self.h)
     end
 
     self.linkChild = function(child)
@@ -74,82 +60,50 @@ Node.new = function(scene, parent, x, y, w, h)
     end
 
     self.draw = function()
-        -- local actualColor = Color(self.color.r, self.color.g, self.color.b, self.color.a)
-        -- if self.hovered then
-        --     actualColor.r = actualColor.r - 0.1
-        --     actualColor.g = actualColor.g - 0.1
-        --     actualColor.b = actualColor.b - 0.1
-        --     actualColor.a = actualColor.a
-        -- end
-        self.updateRealSize()
+        -- love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
 
-        love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
+        love.graphics.setCanvas(self.canvas)
         if self.shader ~= nil then
             self.shader.setActive(true)
         end
 
-        -- if self.canvas ~= nil then
-        --     love.graphics.setCanvas(self.canvas)
-        --     love.graphics.clear()
-        -- elseif self.parent ~= nil and self.parent.canvas ~= nil then
-        --     love.graphics.setCanvas(self.parent.canvas)
-        -- end
-
         self.drawInternal()
 
-        if Scene.drawGizmos then
-            self.drawGizmo()
-            -- reset color after drawing gizmo
-            love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
+        love.graphics.setCanvas()
+        if self.canvas ~= nil then
+            love.graphics.draw(self.canvas, self.x, self.y)
         end
 
-        -- local oldCanvas = nil
-        -- if self.canvas ~= nil then
-        --     oldCanvas = love.graphics.getCanvas()
-        --     love.graphics.setCanvas(self.canvas)
-        --     love.graphics.clear()
-        -- end
-
         self.drawChildren()
-
-        -- if self.parent ~= nil and self.parent.canvas ~= nil then
-        --     love.graphics.setCanvas(self.parent.canvas)
-        -- end
-
-        -- if oldCanvas ~= nil then
-        --     love.graphics.setCanvas(oldCanvas)
-        -- end
-
-        -- if self.canvas ~= nil then
-        --     love.graphics.draw(self.canvas, self.x, self.y)
-        -- end
 
         if self.shader ~= nil then
             self.shader.setActive(false)
         end
 
-        -- love.graphics.setCanvas()
+        if Scene.drawGizmos then
+            self.drawGizmo()
+        end
     end
 
     self.drawGizmo = function()
         love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
         love.graphics.polygon(
             "line",
-            self.rx, self.ry,
-            self.rx + self.rw, self.ry,
-            self.rx + self.rw, self.ry + self.rh,
-            self.rx, self.ry + self.rh
+            self.x, self.y,
+            self.x + self.w - 1, self.y,
+            self.x + self.w - 1, self.y + self.h - 1,
+            self.x, self.y + self.h - 1
         )
     end
 
     self.drawInternal = function()
-        -- love.graphics.polygon(
-        --     "fill",
-        --     self.x, self.y,
-        --     self.x + self.w, self.y,
-        --     self.x + self.w, self.y + self.h,
-        --     self.x, self.y + self.h
-        -- )
+        love.graphics.polygon(
+            "fill",
+            self.x, self.y,
+            self.x + self.w - 1, self.y,
+            self.x + self.w - 1, self.y + self.h - 1,
+            self.x, self.y + self.h - 1
+        )
     end
 
     self.updateInternal = function(dt) end

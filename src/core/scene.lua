@@ -42,6 +42,11 @@ Scene.new = function(id)
     self.nodes = {}
     self.nodesCount = 0
     self.focusElement = nil
+
+    self.scale = 1
+    self.offsetX = 0
+    self.offsetY = 0
+
     self.pressedElement = nil
 
     self.registerNode = function(node)
@@ -53,9 +58,16 @@ Scene.new = function(id)
     end
 
     self.drawAll = function()
+        -- love.graphics.push()
+        -- love.graphics.applyTransform(love.math.newTransform(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+        -- love.graphics.scale(self.scale)
+        -- love.graphics.translate(self.offsetX, self.offsetY)
+
         if self.nodesCount == 0 then return end
 
         self.nodes[0].draw()
+
+        -- love.graphics.pop()
     end
 
     self.updateAll = function(dt)

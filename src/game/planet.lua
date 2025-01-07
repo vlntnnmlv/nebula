@@ -10,7 +10,7 @@ Planet.new = function(scene, parent, x, y, r, isStar)
         shaderName = "shine"
     else
         texture = "planet"
-        shaderName = "chrome" -- "chrome"
+        shaderName = "shine" -- "chrome"
     end
 
     local shader = Shader.new("resources/shaders/"..shaderName..".glsl")
