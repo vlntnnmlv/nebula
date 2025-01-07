@@ -1,11 +1,11 @@
 dofile("src/core/node.lua")
 
-local scene = Scene.new("Test")
+local scene = Scene.new("Shader")
 
 local root = Node.new(scene, nil, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 root.ignoreEvents = true
 
-local image = Node.image(scene, root, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, "resources/textures/beograd.jpg")
+local image = Node.image(scene, root, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, "resources/textures/red.jpg")
 image.setShader(Shader.new("resources/shaders/pixelize.glsl"))
 -- image.setColor(Color(1,1,1,1))
 image.ignoreEvents = true

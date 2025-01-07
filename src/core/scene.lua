@@ -8,9 +8,10 @@ Scene.data = {}
 
 Scene.switchScene = function(id)
     if Scene.data[id] == nil then
-        print("No such scene!")
+        Logger.error("No such scene: "..id.."!")
     else
         Scene.current = Scene.data[id]
+        Logger.success("Scene loaded: "..id.."!")
     end
 end
 
@@ -18,6 +19,8 @@ Scene.loadScenes = function(scenesDir)
     for _, scene in pairs(love.filesystem.getDirectoryItems(scenesDir)) do
         dofile(scenesDir.."/"..scene)
     end
+
+    Logger.success("Scenes loaded!")
 
     local backupScene = Scene.new("BackupScene404")
     local root = Node.new(backupScene, nil, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -27,6 +30,7 @@ Scene.loadScenes = function(scenesDir)
         .setColor(Palette.gizmoRed)
 
     Scene.current = backupScene
+    Logger.success("Backup scene set!")
 end
 
 Scene.new = function(id)

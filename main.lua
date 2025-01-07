@@ -11,16 +11,17 @@ end
 
 function love.load(args)
     love.graphics.setDefaultFilter("nearest", "nearest")
+    love.graphics.setBlendMode("alpha", "alphamultiply")
+    love.graphics.setBackgroundColor(1,1,1,1)
     love.graphics.setFont(love.graphics.newFont("resources/fonts/alagard.ttf", 32))
     love.mouse.setCursor(love.mouse.newCursor(love.image.newImageData("resources/textures/cursor.png"), 0, 0))
 
+    local argsResults = HandleArgs(args)
+
     Scene.loadScenes("src/game/scenes")
-    Logger.success("Scenes loaded!")
 
-    HandleArgs(args)
-    Logger.success("Command line args handled!")
+    Scene.switchScene(argsResults.scene)
 end
-
 function love.draw()
     Scene.current.drawAll()
 end

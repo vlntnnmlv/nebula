@@ -61,7 +61,6 @@ Node.new = function(scene, parent, x, y, w, h)
         -- end
 
         love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
-
         if self.shader ~= nil then
             self.shader.setActive(true)
         end
@@ -121,13 +120,13 @@ Node.new = function(scene, parent, x, y, w, h)
     end
 
     self.drawInternal = function()
-        love.graphics.polygon(
-            "fill",
-            self.x, self.y,
-            self.x + self.w, self.y,
-            self.x + self.w, self.y + self.h,
-            self.x, self.y + self.h
-        )
+        -- love.graphics.polygon(
+        --     "fill",
+        --     self.x, self.y,
+        --     self.x + self.w, self.y,
+        --     self.x + self.w, self.y + self.h,
+        --     self.x, self.y + self.h
+        -- )
     end
 
     self.updateInternal = function(dt) end

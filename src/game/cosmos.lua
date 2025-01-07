@@ -77,15 +77,19 @@ Cosmos.new = function(scene, parent, w, h)
             fx, fy = getForce(p1, p2)
 
             if fx == 0 and fy == 0 then
-                cur1.value.remove()
-                cur1.value = nil
+                if cur1.value.r > 5 then
+                    cur1.value.setRadius(cur1.value.r - 1)
+                else
+                    cur1.value.remove()
+                    cur1.value = nil
 
-                local toRemove = cur1
-                cur1 = cur1.next
+                    local toRemove = cur1
+                    cur1 = cur1.next
 
-                self.planets.remove(toRemove)
-                self.planets.dump()
-                goto continue
+                    self.planets.remove(toRemove)
+                    self.planets.dump()
+                    goto continue
+                end
             end
 
             local cur2 = cur1.next

@@ -3,6 +3,7 @@ Logger = {}
 love.filesystem.setIdentity("nebula")
 
 Logger.save = false
+Logger.verbose = false
 Logger.file = nil
 Logger.filename = nil
 
@@ -31,7 +32,9 @@ end
 local function log(prefix, message, color, effect)
     local timestamp = "["..os.date("%H:%M:%S", os.time()).."]"
 
-    print(timestamp.." "..FORMAT(prefix, color, effect).." "..message)
+    if Logger.verbose then
+        print(timestamp.. " "..FORMAT(prefix, color, effect).." "..message)
+    end
 
     if Logger.save then
         if Logger.file == nil then
