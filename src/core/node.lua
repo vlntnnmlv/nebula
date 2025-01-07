@@ -19,10 +19,9 @@ Node.new = function(scene, parent, x, y, w, h)
         self.parent.linkChild(self)
     end
 
-
     self.updateRealSize = function()
-        self.rx = ((x - self.px) * self.sx)
-        self.ry = ((y - self.py) * self.sy)
+        self.rx = x * self.sx
+        self.ry = y * self.sy
 
         self.rw = self.w * self.sx
         self.rh = self.h * self.sy
@@ -211,6 +210,7 @@ end
 Node.text = function(scene, parent, text, cx, cy, fontSize, incept)
     -- TODO: Clean this mess, why we are calculating this two times?
     local font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
+
     local w = font:getWidth(text)
     local h = font:getHeight(text)
     local self = Node.new(scene, parent, cx, cy, w, h)
