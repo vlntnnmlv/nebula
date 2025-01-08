@@ -2,7 +2,7 @@ dofile("src/core/scene.lua")
 dofile("src/core/args.lua")
 dofile("src/core/logger.lua")
 
-SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
+SCREEN_WIDTH, SCREEN_HEIGHT = nil, nil
 
 local function exit()
     Logger.dispose()
@@ -18,6 +18,7 @@ function love.load(args)
     love.mouse.setCursor(love.mouse.newCursor(love.image.newImageData("resources/textures/cursor.png"), 0, 0))
 
     local argsResults = HandleArgs(args)
+    SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 
     Scene.loadScenes("src/game/scenes")
 
@@ -37,7 +38,7 @@ function love.keyreleased(key)
     if key == "escape" then
         exit()
     elseif key == "p" then
-        love.graphics.captureScreenshot("screenshot"..os.time()..".png")
+        love.graphics.captureScreenshot(os.date("%m-%d-%Y_%H%-M-%S", os.time())..".png")
     end
 end
 

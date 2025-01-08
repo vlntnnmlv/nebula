@@ -67,6 +67,7 @@ Node.new = function(scene, parent, x, y, w, h)
         love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
 
         love.graphics.setCanvas(self.canvas)
+        love.graphics.clear()
         if self.shader ~= nil then
             self.shader.setActive(true)
         end
@@ -74,6 +75,7 @@ Node.new = function(scene, parent, x, y, w, h)
         self.drawInternal()
 
         love.graphics.setCanvas()
+
         if self.canvas ~= nil then
             love.graphics.draw(self.canvas, self.x, self.y)
         end
@@ -83,7 +85,6 @@ Node.new = function(scene, parent, x, y, w, h)
         end
 
         self.drawChildren()
-
 
         if Scene.drawGizmos then
             self.drawGizmo()

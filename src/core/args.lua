@@ -1,4 +1,5 @@
 local __argsResults = {
+    windowSize = { w = nil, h = nil },
     scene = nil,
     drawGizmos = false,
     loggerVerbose = false,
@@ -8,6 +9,8 @@ local __argsResults = {
 local __argsActions = {
     ["--scene"] = function(sceneID) __argsResults.scene = sceneID end,
     ["--gizmo"] = function(gizmo) __argsResults.drawGizmos = gizmo == "1" end,
+    ["--width"] = function(width) __argsResults.windowSize.w = width end,
+    ["--height"] = function(height) __argsResults.windowSize.h = height end,
     ["-v"] = function() __argsResults.loggerVerbose = true end,
     ["-s"] = function() __argsResults.loggerSave = true end
 }
@@ -52,6 +55,18 @@ function HandleArgs(args)
 end
 
 function ApplyArgsResults(argsResults)
+    local defaultWidth, defaultHeight = love.graphics.getDimensions()
+    local newWidth, newHeight = defaultWidth, defaultHeight
+    if argsResults.windowSize.w ~= nil then
+        newWidth = argsResults.windowSize.w
+    end
+
+    if argsResults.windowSize.h ~= nil then
+        newHeight = argsResults.windowSize.h
+    end
+
+    love.window.setMode(newWidth, newHeight)
+
     Scene.drawGizmos = argsResults.drawGizmos
 
     Logger.verbose = argsResults.loggerVerbose
