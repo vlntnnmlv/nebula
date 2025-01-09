@@ -8,11 +8,10 @@ root.ignoreEvents = true
 
 local picName = "big"
 
--- Node.image(scene, root, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, "resources/textures/probe/"..picName..".png").setShader(Shader.new("resources/shaders/image.glsl"))
+-- Node.image(scene, root, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, "resources/textures/probe/"..picName..".png")
 
 local imageWidth, imageHeight = 565, 960
 local image = Node.image(scene, root, SCREEN_WIDTH / 2 - imageWidth / 2, SCREEN_HEIGHT / 2 - imageHeight / 2, imageWidth, imageHeight, "resources/textures/probe/"..picName..".png")
-image.setShader(Shader.new("resources/shaders/image.glsl"))
 image.setColor(Color(1,1,1,1))
 image.ignoreEvents = true
 

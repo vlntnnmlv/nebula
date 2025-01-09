@@ -2,10 +2,10 @@ dofile("src/core/list.lua")
 
 Shader = {}
 
-Shader.new = function(shaderFile)
+Shader.new = function(shaderName)
     local self = {}
 
-    self.shader = love.graphics.newShader(shaderFile)
+    self.shader = love.graphics.newShader("resources/shaders/"..shaderName..".glsl")
     self.parameters = List.new()
 
     self.setParameter = function(name, value)

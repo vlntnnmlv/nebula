@@ -12,9 +12,11 @@ Node.new = function(scene, parent, x, y, w, h)
     self.children = List.new()
 
     self.color = Color(1, 1, 1, 1)
-    self.shader = Shader.new("resources/shaders/color.glsl")
+    self.shader = Shader.new("color")
 
     self.ignoreEvents = false
+    self.active = true
+
     self.hovered = false
 
     if self.parent ~= nil then
@@ -36,11 +38,6 @@ Node.new = function(scene, parent, x, y, w, h)
         end
     end
 
-    self.setScale = function(newsx, newsy)
-        self.sx = newsx
-        self.sy = newsy
-    end
-
     self.setSize = function(newW, newH)
         self.w = newW
         self.h = newH
@@ -53,9 +50,8 @@ Node.new = function(scene, parent, x, y, w, h)
         self.canvas = love.graphics.newCanvas(cw, ch)
     end
 
-
     self.setShader = function(shader)
-        self.shader = shader
+        self.shader = Shader.new(shader)
     end
 
     self.linkChild = function(child)
@@ -77,6 +73,8 @@ Node.new = function(scene, parent, x, y, w, h)
     end
 
     self.draw = function()
+        if not self.active then return end
+
         love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
 
         love.graphics.setCanvas(self.canvas)
@@ -115,13 +113,6 @@ Node.new = function(scene, parent, x, y, w, h)
     end
 
     self.drawInternal = function()
-        -- love.graphics.polygon(
-        --     "fill",
-        --     self.x, self.y,
-        --     self.x + self.w - 1, self.y,
-        --     self.x + self.w - 1, self.y + self.h - 1,
-        --     self.x, self.y + self.h - 1
-        -- )
         love.graphics.polygon(
             "fill",
             0, 0,
@@ -134,6 +125,8 @@ Node.new = function(scene, parent, x, y, w, h)
     self.updateInternal = function(dt) end
 
     self.update = function(dt)
+        if not self.active then return end
+
         if self.shader ~= nil then self.shader.update() end
 
         self.updateInternal(dt)
@@ -235,7 +228,8 @@ end
 
 Node.image = function(scene, parent, x, y, w, h, image)
     local self = Node.new(scene, parent, x, y, w, h)
-
+    self.shader = Shader.new("image")
+    
     self.imageData = love.image.newImageData(image)
     self.image = love.graphics.newImage(self.imageData)
 
@@ -258,10 +252,6 @@ Node.image = function(scene, parent, x, y, w, h, image)
     self.drawInternal = function()
         love.graphics.draw(self.image, 0 + self.w / 2, 0 + self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
     end
-
-    -- self.updateInternal = function(dt)
-    --     if self.shader ~= nil then self.shader.update() end
-    -- end
 
     self.rotate = function(rotation)
         self.rotation = self.rotation + rotation

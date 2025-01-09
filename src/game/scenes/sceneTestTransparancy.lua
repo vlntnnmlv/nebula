@@ -8,5 +8,5 @@ local node = Node.new(scene, root, SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 4, SCREEN
 node.setColor(Color(0.0, 1.0, 0.0, 0.5))
 
 local nody = Node.image(scene, node, SCREEN_WIDTH / 2 - 100, 150, 200, 200, "resources/textures/planet.png")
-nody.setShader(Shader.new("resources/shaders/shine.glsl"))
+nody.setShader("shine")
 nody.setColor(Color(0.0, 0.0, 1.0, 0.5))

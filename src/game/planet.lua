@@ -4,19 +4,21 @@ Planet = {}
 
 Planet.new = function(scene, parent, x, y, r)
     local self = Node.new(scene, parent, x - r / 2, y - r / 2, r * 2, r * 2)
-    self.setShader(Shader.new("resources/shaders/shine.glsl"))
+    self.setShader("shine")
     self.setColor(RandomColor())
+    self.shader.setParameter("iTime", function() return self.time end)
+
     self.ignoreEvents = true
 
-    self.cx = x -- actual center of the planet
-    self.cy = y -- actual center of the planet
+    -- actual center of the planet
+    self.cx = x
+    self.cy = y
+
     self.vx = 0
     self.vy = 0
     self.ax = 0
     self.ay = 0
     self.time = 0
-
-    self.rotationSpeed = love.math.random() * 2
 
     self.setRadius = function(newR)
         self.r = newR
@@ -28,8 +30,6 @@ Planet.new = function(scene, parent, x, y, r)
 
     self.setRadius(r)
 
-    self.shader.setParameter("iTime", function() return self.time end)
-
     local updateInternalBase = self.updateInternal
     self.updateInternal = function(dt)
         self.vx = self.vx + self.ax * dt
@@ -37,8 +37,9 @@ Planet.new = function(scene, parent, x, y, r)
         self.cx = self.cx + self.vx * dt
         self.cy = self.cy + self.vy * dt
 
-        self.x = self.cx - self.r / 2 -- rect coordinates for rendering
-        self.y = self.cy - self.r / 2 -- rect coordinates for rendering
+        -- rect coordinates for rendering
+        self.x = self.cx - self.r / 2
+        self.y = self.cy - self.r / 2
 
         self.time = self.time + dt
 
@@ -56,7 +57,7 @@ Planet.new = function(scene, parent, x, y, r)
     end
 
     self.toString = function(this)
-        return "Planet "..this.id..": ".."mass: "..this.m
+        return "P["..this.id..": ".."mass: "..this.m.."]"
     end
 
     return self

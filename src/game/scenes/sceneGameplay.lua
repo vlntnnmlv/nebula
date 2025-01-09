@@ -4,7 +4,6 @@ dofile("src/game/fps.lua")
 local sceneGameplay = Scene.new("Gameplay")
 
 local root = Node.new(sceneGameplay, nil, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
-root.setColor(Color(0.117, 0.109, 0.223, 1.0))
 root.ignoreEvents = true
 
 Cosmos.new(sceneGameplay, root, SCREEN_WIDTH, SCREEN_HEIGHT)

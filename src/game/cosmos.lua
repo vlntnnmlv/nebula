@@ -27,17 +27,14 @@ Cosmos = {}
 
 Cosmos.new = function(scene, parent, w, h)
     local self = Node.new(scene, parent, 0, 0, w, h)
-    self.setColor(Color(0,0,0,0))
-    self.setShader(Shader.new("resources/shaders/pixelize.glsl"))
-    self.shader.setParameter("iScale", { 64, 64 })
+
     self.ignoreEvents = false
 
     self.star = Planet.new(scene, self, w / 2, h / 2, 64)
     self.star.m = 10e5
     self.planets = List.new()
     self.speedPointer = Node.image(scene, self, 0, 0, 8, 8, "resources/textures/pointer.png")
-    self.speedPointer.setShader(Shader.new("resources/shaders/image.glsl"))
-    self.speedPointer.setColor(Color(1,1,1,0))
+    self.speedPointer.active = false
 
     self.addPlanet = function(planet)
         self.planets.append(planet)
@@ -61,6 +58,9 @@ Cosmos.new = function(scene, parent, w, h)
             love.graphics.line(cur.value.cx, cur.value.cy, self.star.cx, self.star.cy)
             cur = cur.next
         end
+
+        if self.currentPlanet == nil then return end
+        love.graphics.line(self.currentPlanet.cx, self.currentPlanet.cy, self.currentPlanet.cx + self.dx, self.currentPlanet.cy + self.dy)
     end
 
     self.updateInternal = function(dt)
@@ -70,8 +70,8 @@ Cosmos.new = function(scene, parent, w, h)
             self.dx = self.currentPlanet.cx - mouseX
             self.dy = self.currentPlanet.cy - mouseY
             self.currentPlanet.setRadius(math.sqrt(dist2(self.currentPlanet.cx, self.currentPlanet.cy, mouseX, mouseY)))
-            self.speedPointer.x = self.currentPlanet.cx + self.dx
-            self.speedPointer.y = self.currentPlanet.cx + self.dy
+            self.speedPointer.x = self.currentPlanet.cx + (self.dx / 4) - 4
+            self.speedPointer.y = self.currentPlanet.cy + (self.dy / 4) - 4
         end
 
         local cur1 = self.planets.head
@@ -128,7 +128,7 @@ Cosmos.new = function(scene, parent, w, h)
             if pressed then
                 self.currentPlanet = Planet.new(self.scene, self, mouseX, mouseY, 10)
                 local dx, dy = self.currentPlanet.cx - mouseX, self.currentPlanet.cy - mouseY
-                self.speedPointer.setColor(Color(1,1,1,1))
+                self.speedPointer.active = true
                 self.speedPointer.x = mouseX + dx * 2
                 self.speedPointer.y = mouseY + dy * 2
             else
@@ -139,7 +139,7 @@ Cosmos.new = function(scene, parent, w, h)
                 self.currentPlanet.vy = dy
                 self.addPlanet(self.currentPlanet)
                 self.currentPlanet = nil
-                self.speedPointer.setColor(Color(1,1,1,0))
+                self.speedPointer.active = false
                 self.dx = 0
                 self.dy = 0
             end
