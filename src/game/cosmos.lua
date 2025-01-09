@@ -33,7 +33,7 @@ Cosmos.new = function(scene, parent, w, h)
     self.star = Planet.new(scene, self, w / 2, h / 2, 64)
     self.star.m = 10e5
     self.planets = List.new()
-    self.speedPointer = Node.image(scene, self, 0, 0, 8, 8, "resources/textures/pointer.png")
+    self.speedPointer = Node.image(scene, self, 0, 0, 8, 8, "pointer.png")
     self.speedPointer.active = false
 
     self.addPlanet = function(planet)

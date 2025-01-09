@@ -230,7 +230,7 @@ Node.image = function(scene, parent, x, y, w, h, image)
     local self = Node.new(scene, parent, x, y, w, h)
     self.shader = Shader.new("image")
     
-    self.imageData = love.image.newImageData(image)
+    self.imageData = love.image.newImageData("resources/textures/"..image)
     self.image = love.graphics.newImage(self.imageData)
 
     self.scaleX = self.w / self.imageData:getWidth()
