@@ -41,6 +41,19 @@ Node.new = function(scene, parent, x, y, w, h)
         self.sy = newsy
     end
 
+    self.setSize = function(newW, newH)
+        self.w = newW
+        self.h = newH
+
+        local cw, ch = 1, 1
+        if self.w > 1 then cw = self.w end
+        if self.h > 1 then ch = self.h end
+
+        self.canvas:release()
+        self.canvas = love.graphics.newCanvas(cw, ch)
+    end
+
+
     self.setShader = function(shader)
         self.shader = shader
     end
@@ -235,16 +248,10 @@ Node.image = function(scene, parent, x, y, w, h, image)
     self.shearX = 0
     self.shearY = 0
 
+    local setSizeBase = self.setSize
     self.setSize = function(newW, newH)
-        self.w = newW
-        self.h = newH
+        setSizeBase(newW, newH)
 
-        local cw, ch = 1, 1
-        if self.w > 1 then cw = self.w end
-        if self.h > 1 then ch = self.h end
-
-        self.canvas:release()
-        self.canvas = love.graphics.newCanvas(cw, ch)
         self.scaleX = self.w / self.imageData:getWidth()
         self.scaleY = self.h / self.imageData:getHeight()
     end

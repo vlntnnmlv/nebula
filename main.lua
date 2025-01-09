@@ -81,3 +81,33 @@ end
 function love.mousereleased(_, _, _)
     Scene.current.updateMouseButtonEvent(false)
 end
+
+-- SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
+-- MainCanvas = nil
+-- InnerCanvas = nil
+
+-- function love.load()
+--     MainCanvas = love.graphics.newCanvas(SCREEN_WIDTH, SCREEN_HEIGHT)
+--     InnerCanvas = love.graphics.newCanvas(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+--     love.graphics.setBackgroundColor(1,1,1,1)
+--     love.graphics.setBlendMode("alpha", "alphamultiply")
+-- end
+
+-- function love.draw()
+
+--     love.graphics.setCanvas(InnerCanvas)
+--     love.graphics.clear()
+--     love.graphics.setColor(0,0,1,1)
+--     love.graphics.polygon("fill", 0, 0 , SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 0, SCREEN_HEIGHT / 2)
+--     love.graphics.setColor(1,0,0,1)
+--     love.graphics.circle("fill", SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, 50)
+--     love.graphics.setCanvas()
+
+--     love.graphics.setCanvas(MainCanvas)
+--     love.graphics.clear()
+--     love.graphics.setColor(1,1,1,1)
+--     love.graphics.draw(InnerCanvas, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4)
+--     love.graphics.setCanvas()
+
+--     love.graphics.draw(MainCanvas, 0, 0)
+-- end

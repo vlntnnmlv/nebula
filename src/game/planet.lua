@@ -15,7 +15,7 @@ Planet.new = function(scene, parent, x, y, r, isStar)
 
     local shader = Shader.new("resources/shaders/"..shaderName..".glsl")
 
-    local self = Node.image(scene, parent, x - r / 2, y - r / 2, r * 2, r * 2, "resources/textures/"..texture..".png")
+    local self = Node.new(scene, parent, x - r / 2, y - r / 2, r * 2, r * 2)
     self.setShader(shader)
     self.setColor(RandomColor())
     self.ignoreEvents = true
@@ -46,7 +46,7 @@ Planet.new = function(scene, parent, x, y, r, isStar)
 
     local updateInternalBase = self.updateInternal
     self.updateInternal = function(dt)
-        self.rotate(self.rotationSpeed * dt)
+        -- self.rotate(self.rotationSpeed * dt)
 
         self.vx = self.vx + self.ax * dt
         self.vy = self.vy + self.ay * dt
