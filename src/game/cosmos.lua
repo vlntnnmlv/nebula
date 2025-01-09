@@ -9,7 +9,7 @@ local function getForce(p1, p2)
     local distTrue = math.sqrt(distSq)
     local fx, fy = 0, 0
 
-    if distTrue > p2.r / 2 + p1.r / 2 and distTrue < 10000 then
+    if distTrue > 1 and distTrue < 10000 then
         local fBig = 100 * p1.m * p2.m / distSq * (p2.m / (p1.m + p2.m))
         local fToApply = fBig / p1.m
 
@@ -32,9 +32,12 @@ Cosmos.new = function(scene, parent, w, h)
     self.shader.setParameter("iScale", { 64, 64 })
     self.ignoreEvents = false
 
-    self.star = Planet.new(scene, self, w / 2, h / 2, 64, true)
+    self.star = Planet.new(scene, self, w / 2, h / 2, 64)
     self.star.m = 10e5
     self.planets = List.new()
+    self.speedPointer = Node.image(scene, self, 0, 0, 8, 8, "resources/textures/pointer.png")
+    self.speedPointer.setShader(Shader.new("resources/shaders/image.glsl"))
+    self.speedPointer.setColor(Color(1,1,1,0))
 
     self.addPlanet = function(planet)
         self.planets.append(planet)
@@ -64,7 +67,11 @@ Cosmos.new = function(scene, parent, w, h)
         local mouseX, mouseY = love.mouse.getPosition()
 
         if self.currentPlanet ~= nil then
+            self.dx = self.currentPlanet.cx - mouseX
+            self.dy = self.currentPlanet.cy - mouseY
             self.currentPlanet.setRadius(math.sqrt(dist2(self.currentPlanet.cx, self.currentPlanet.cy, mouseX, mouseY)))
+            self.speedPointer.x = self.currentPlanet.cx + self.dx
+            self.speedPointer.y = self.currentPlanet.cx + self.dy
         end
 
         local cur1 = self.planets.head
@@ -75,6 +82,9 @@ Cosmos.new = function(scene, parent, w, h)
 
             local p2 = self.star
             fx, fy = getForce(p1, p2)
+
+            ax = ax + fx
+            ay = ay + fy
 
             if fx == 0 and fy == 0 then
                 if cur1.value.r > 5 then
@@ -102,9 +112,6 @@ Cosmos.new = function(scene, parent, w, h)
                 cur2 = cur2.next
             end
 
-            ax = ax + fx
-            ay = ay + fy
-
             p1.ax = ax
             p1.ay = ay
 
@@ -119,12 +126,22 @@ Cosmos.new = function(scene, parent, w, h)
         function(pressed)
             local mouseX, mouseY = love.mouse.getPosition()
             if pressed then
-                self.currentPlanet = Planet.new(self.scene, self, mouseX, mouseY, 10, false)
+                self.currentPlanet = Planet.new(self.scene, self, mouseX, mouseY, 10)
+                local dx, dy = self.currentPlanet.cx - mouseX, self.currentPlanet.cy - mouseY
+                self.speedPointer.setColor(Color(1,1,1,1))
+                self.speedPointer.x = mouseX + dx * 2
+                self.speedPointer.y = mouseY + dy * 2
             else
                 if self.currentPlanet == nil then return end
+                local dx, dy = self.currentPlanet.cx - mouseX, self.currentPlanet.cy - mouseY
                 self.currentPlanet.setRadius(math.sqrt(dist2(self.currentPlanet.cx, self.currentPlanet.cy, mouseX, mouseY)))
+                self.currentPlanet.vx = dx
+                self.currentPlanet.vy = dy
                 self.addPlanet(self.currentPlanet)
                 self.currentPlanet = nil
+                self.speedPointer.setColor(Color(1,1,1,0))
+                self.dx = 0
+                self.dy = 0
             end
         end
     )

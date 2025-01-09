@@ -2,25 +2,11 @@ dofile("src/core/node.lua")
 
 Planet = {}
 
-Planet.new = function(scene, parent, x, y, r, isStar)
-    local texture = nil
-    local shaderName = nil
-    if isStar then
-        texture = "star"
-        shaderName = "shine"
-    else
-        texture = "planet"
-        shaderName = "shine" -- "chrome"
-    end
-
-    local shader = Shader.new("resources/shaders/"..shaderName..".glsl")
-
+Planet.new = function(scene, parent, x, y, r)
     local self = Node.new(scene, parent, x - r / 2, y - r / 2, r * 2, r * 2)
-    self.setShader(shader)
+    self.setShader(Shader.new("resources/shaders/shine.glsl"))
     self.setColor(RandomColor())
     self.ignoreEvents = true
-
-    self.isStar = isStar
 
     self.cx = x -- actual center of the planet
     self.cy = y -- actual center of the planet
@@ -46,8 +32,6 @@ Planet.new = function(scene, parent, x, y, r, isStar)
 
     local updateInternalBase = self.updateInternal
     self.updateInternal = function(dt)
-        -- self.rotate(self.rotationSpeed * dt)
-
         self.vx = self.vx + self.ax * dt
         self.vy = self.vy + self.ay * dt
         self.cx = self.cx + self.vx * dt

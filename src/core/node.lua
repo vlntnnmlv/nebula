@@ -80,7 +80,6 @@ Node.new = function(scene, parent, x, y, w, h)
         love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
 
         love.graphics.setCanvas(self.canvas)
-        love.graphics.clear()
         if self.shader ~= nil then
             self.shader.setActive(true)
         end
