@@ -43,10 +43,10 @@ Unfortunately, LOVE2D does not support glsl structure uniforms, so parameters ar
 ### Logger
 Just a static logger with 4 types of messages:
 
-``NOTICE`` - for debugging or regular logs
-``SUCCESS`` - to highlight something nice has happened
-``WARNING`` - to take attention to something wrong
-``ERROR`` - for critical breakages
+- ``NOTICE`` - for debugging or regular logs
+- ``SUCCESS`` - to highlight something nice has happened
+- ``WARNING`` - to take attention to something wrong
+- ``ERROR`` - for critical breakages
 
 ### Command line arguments
 
