@@ -8,8 +8,8 @@ Shader.new = function(shaderName)
     self.shader = love.graphics.newShader("resources/shaders/"..shaderName..".glsl")
     self.parameters = List.new()
 
-    self.setParameter = function(name, value)
-        self.parameters.append({name = name, value = value})
+    self.setParameter = function(name, value, array)
+        self.parameters.append({name = name, value = value, array = array})
     end
 
     self.setActive = function(active)
@@ -32,7 +32,11 @@ Shader.new = function(shaderName)
                     valueToSet = paramater.value
                 end
 
-                self.shader:send(paramater.name, valueToSet)
+                if paramater.array ~= nil then
+                    self.shader:send(paramater.name, unpack(valueToSet))
+                else
+                    self.shader:send(paramater.name, valueToSet)
+                end
             end
         )
     end
