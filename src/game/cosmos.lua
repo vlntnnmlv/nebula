@@ -9,7 +9,7 @@ local function getForce(p1, p2)
     local distTrue = math.sqrt(distSq)
     local fx, fy = 0, 0
 
-    if distTrue > 1 and distTrue < 10000 then
+    if distTrue < 10000 then
         local fBig = 100 * p1.m * p2.m / distSq * (p2.m / (p1.m + p2.m))
         local fToApply = fBig / p1.m
 

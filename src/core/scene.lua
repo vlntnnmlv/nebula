@@ -74,6 +74,8 @@ Scene.new = function(id)
         if self.nodesCount == 0 then return end
 
         self.nodes[0].update(dt)
+
+        self.focusElement.updateKeys()
     end
 
     self.updateMouseButtonEvent = function(pressed)

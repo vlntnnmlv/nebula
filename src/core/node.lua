@@ -17,8 +17,6 @@ Node.new = function(scene, parent, x, y, w, h)
     self.ignoreEvents = false
     self.active = true
 
-    self.hovered = false
-
     if self.parent ~= nil then
         self.parent.linkChild(self)
     end
@@ -110,6 +108,14 @@ Node.new = function(scene, parent, x, y, w, h)
             self.x + self.w - 1, self.y + self.h - 1,
             self.x, self.y + self.h - 1
         )
+
+        love.graphics.print(self.id, self.x + self.w - 20, self.y + 7)
+
+        if self.scene.focusElement == self then
+            love.graphics.circle("fill", self.x + 7, self.y + 7, 5)
+        end
+
+        love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
     end
 
     self.drawInternal = function()
@@ -131,43 +137,38 @@ Node.new = function(scene, parent, x, y, w, h)
 
         self.updateInternal(dt)
 
-        return self.updateState(dt)
+        self.updateState(dt)
     end
 
     self.updateChildren = function(dt)
-        local anyChildHovered = false
-
-        if self.children.applyUntil(
-                function(child)  return child.update(dt) end,
-                function(result) return result == true end
-            ) then
-            anyChildHovered = true
-        end
-
-        return anyChildHovered
+        self.children.apply(function(child) return child.update(dt) end)
     end
 
-    self.updateState = function(dt)
-        local mouseX, mouseY = love.mouse.getPosition()
-
-        local anyChildHovered = self.updateChildren(dt)
-
-        if anyChildHovered then
-            self.hovered = false
-            return false
-        end
-
+    self.updateState = function(dt)        
         if self.ignoreEvents then return false end
 
+        local mouseX, mouseY = love.mouse.getPosition()
         if mouseX <= self.x or mouseX >= self.x + self.w or mouseY <= self.y or mouseY >= self.y + self.h then
-            self.hovered = false
             return false
         end
 
-        self.hovered = true
         self.scene.focusElement = self
 
-        return true
+        self.updateChildren(dt)
+    end
+
+    self.keyActions = { }
+
+    self.setKeyAction = function(key, action)
+        self.keyActions[key] = action
+    end
+
+    self.updateKeys = function()
+        for key, action in pairs(self.keyActions) do
+            if Keys.held[key] then
+                action()
+            end
+        end
     end
 
     self.setAction = function(action)
