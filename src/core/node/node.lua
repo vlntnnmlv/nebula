@@ -11,8 +11,8 @@ Node.new = function(scene, parent, x, y, w, h)
     self.parent = parent
     self.children = List.new()
 
-    self.color = Color(1, 1, 1, 1)
     self.shader = Shader.new("image")
+    self.color = Color(1, 1, 1, 1)
 
     self.ignoreEvents = false
     self.active = true
@@ -26,13 +26,13 @@ Node.new = function(scene, parent, x, y, w, h)
     self.x = x
     self.y = y
 
-    self.canvas = love.graphics.newCanvas(self.w, self.h)
+    self.canvas = love.graphics.newCanvas(self.w, self.h, { format = "rgba8", mipmaps = "none"})
 
     self.setColor = function(color)
+        self.color = color
+
         if self.shader ~= nil then
             self.shader.setParameter("iColor", { color.r, color.g, color.b, color.a })
-        else
-            self.color = color
         end
     end
 
@@ -50,6 +50,12 @@ Node.new = function(scene, parent, x, y, w, h)
 
     self.setShader = function(shader)
         self.shader = Shader.new(shader)
+    end
+
+    self.setShaderActive = function(active)
+        if self.shader == nil then return end
+
+        self.shader.setActive(active)
     end
 
     self.linkChild = function(child)
@@ -73,47 +79,43 @@ Node.new = function(scene, parent, x, y, w, h)
     self.draw = function()
         if not self.active then return end
 
-        Logger.notice("id: "..self.id)
-
         love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
 
         love.graphics.setCanvas(self.canvas)
-        love.graphics.clear()
-
-        Logger.notice("canvas id: "..self.id)
+        love.graphics.clear(0, 0, 0, 0)
 
         self.drawInternal()
 
-        self.drawChildren()
+        -- love.graphics.setCanvas()
 
-        love.graphics.setCanvas(self.canvas)
-        love.graphics.clear()
+        -- self.drawChildren()
 
-        Logger.notice("canvas id: "..self.id)
+        -- love.graphics.setCanvas(self.canvas)
 
         self.children.apply(
             function(child)
-                Logger.notice("rendering child: "..child.id.." to canvas id: "..self.id)
+                child.draw()
+                child.setShaderActive(true)
+                Logger.notice("Node "..child.id.." is rendered on parent "..self.id)
                 love.graphics.draw(child.canvas, child.x, child.y)
+                child.setShaderActive(false)
             end
         )
 
         love.graphics.setCanvas()
 
-        if Scene.drawGizmos then
-            self.drawGizmo()
-        end
-
-        if self.shader ~= nil then
-            self.shader.setActive(true)
-        end
-
         if self.parent == nil then
+            love.graphics.clear()
+            self.setShaderActive(true)
+            Logger.notice("Root is rendered")
             love.graphics.draw(self.canvas, self.x, self.y)
+            self.setShaderActive(false)
         end
 
-        if self.shader ~= nil then
-            self.shader.setActive(false)
+        if Scene.drawGizmos then
+            love.graphics.setCanvas(self.scene.gizmoCanvas)
+            self.drawGizmo()
+            love.graphics.setCanvas()
         end
     end
 

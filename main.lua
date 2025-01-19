@@ -10,12 +10,13 @@ local function exit()
     love.event.quit()
 end
 
-function love.load(args)
+local function init(args)
     love.graphics.setDefaultFilter("nearest", "nearest")
-    love.graphics.setBlendMode("alpha", "alphamultiply")
-    love.graphics.setBackgroundColor(1,1,1,1)
+    love.graphics.setBlendMode("alpha") -- , "alphamultiply")
+    love.graphics.setBackgroundColor(1.0, 1.0, 1.0, 1.0)
 
     love.graphics.setFont(love.graphics.newFont("resources/fonts/alagard.ttf", 32))
+
     love.mouse.setCursor(love.mouse.newCursor(love.image.newImageData("resources/textures/cursor.png"), 0, 0))
 
     local argsResults = HandleArgs(args)
@@ -24,6 +25,10 @@ function love.load(args)
     Scene.loadScenes("src/game/scenes")
 
     Scene.switchScene(argsResults.scene)
+end
+
+function love.load(args)
+    init(args)
 end
 
 function love.draw()
@@ -55,3 +60,34 @@ end
 function love.mousereleased(_, _, _)
     Scene.current.updateMouseButtonEvent(false)
 end
+
+-- RootCanvas = nil;
+-- RootShader = nil;
+
+-- PixelCanvas = nil;
+-- PixelShader = nil;
+
+-- function love.load()
+--     RootCanvas = love.graphics.newCanvas(400, 400)
+
+--     RootShader = love.graphics.newShader("resources/shaders/shine.glsl");
+--     RootShader:send("iColor", { 1.0, 0.0, 0.0, 1.0})
+
+--     PixelCanvas = love.graphics.newCanvas(400, 400)
+
+--     PixelShader = love.graphics.newShader("resources/shaders/pixelize.glsl");
+--     PixelShader:send("iScale", { 16, 16})
+-- end
+
+-- function love.draw()
+--     love.graphics.setShader(RootShader)
+--     RootShader:send("iTime", love.timer.getTime())
+--     love.graphics.setCanvas(PixelCanvas)
+--     love.graphics.clear()
+
+--     love.graphics.draw(RootCanvas, 0, 0)
+
+--     love.graphics.setCanvas()
+--     love.graphics.setShader(PixelShader)
+--     love.graphics.draw(PixelCanvas, 0, 0)
+-- end

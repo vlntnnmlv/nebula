@@ -1,4 +1,4 @@
-dofile("src/core/node.lua")
+dofile("src/core/node/node.lua")
 
 Planet = {}
 

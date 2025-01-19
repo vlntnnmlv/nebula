@@ -5,6 +5,7 @@ Shader = {}
 Shader.new = function(shaderName)
     local self = {}
 
+    self.id = shaderName
     self.shader = love.graphics.newShader("resources/shaders/"..shaderName..".glsl")
     self.parameters = List.new()
 
@@ -14,8 +15,10 @@ Shader.new = function(shaderName)
 
     self.setActive = function(active)
         if active then
+            Logger.notice("Shader "..self.id.." is on!")
             love.graphics.setShader(self.shader)
         else
+            Logger.notice("Shader "..self.id.." is off!")
             love.graphics.setShader()
         end
     end

@@ -1,4 +1,4 @@
-dofile("src/core/node.lua")
+dofile("src/core/node/node.lua")
 
 Scene = {}
 
@@ -7,7 +7,9 @@ Scene.current = nil
 Scene.data = {}
 
 Scene.switchScene = function(id)
-    if Scene.data[id] == nil then
+    if id == nil then
+        Logger.warning("No scene specified. Setting to default...")
+    elseif Scene.data[id] == nil then
         Logger.error("No such scene: "..id.."!")
     else
         Scene.current = Scene.data[id]
@@ -39,6 +41,8 @@ Scene.new = function(id)
     self.id = id
     Scene.data[id] = self
 
+    self.gizmoCanvas = love.graphics.newCanvas(SCREEN_WIDTH, SCREEN_HEIGHT)
+
     self.nodes = {}
     self.nodesCount = 0
     self.focusElement = nil
@@ -58,16 +62,16 @@ Scene.new = function(id)
     end
 
     self.drawAll = function()
-        -- love.graphics.push()
-        -- love.graphics.applyTransform(love.math.newTransform(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-        -- love.graphics.scale(self.scale)
-        -- love.graphics.translate(self.offsetX, self.offsetY)
-
         if self.nodesCount == 0 then return end
 
+        love.graphics.setCanvas(self.gizmoCanvas)
+        love.graphics.clear(1.0, 1.0, 1.0, 1.0)
+        love.graphics.setCanvas()
+
+        love.graphics.clear(1.0, 1.0, 1.0, 1.0)
         self.nodes[0].draw()
 
-        -- love.graphics.pop()
+        love.graphics.draw(self.gizmoCanvas, 0, 0)
     end
 
     self.updateAll = function(dt)
