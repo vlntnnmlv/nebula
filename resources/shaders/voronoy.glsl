@@ -9,7 +9,15 @@ uniform vec4 iColor;
 
 float dist(vec2 a, vec2 b)
 {
-    return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
+    // chebyshev
+    if (abs(b.x - a.x) > abs(b.y - a.y))
+        return abs(b.x - a.x);
+    else
+        return abs(b.y - a.y);
+    // manhattan
+    // return abs(b.x - a.x) + abs(b.y - a.y);
+    // euclidean
+    // return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
 }
 
 vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
