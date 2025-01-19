@@ -12,7 +12,7 @@ Node.new = function(scene, parent, x, y, w, h)
     self.children = List.new()
 
     self.color = Color(1, 1, 1, 1)
-    self.shader = Shader.new("color")
+    self.shader = Shader.new("image")
 
     self.ignoreEvents = false
     self.active = true
@@ -73,29 +73,47 @@ Node.new = function(scene, parent, x, y, w, h)
     self.draw = function()
         if not self.active then return end
 
+        Logger.notice("id: "..self.id)
+
         love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
 
         love.graphics.setCanvas(self.canvas)
+        love.graphics.clear()
+
+        Logger.notice("canvas id: "..self.id)
+
+        self.drawInternal()
+
+        self.drawChildren()
+
+        love.graphics.setCanvas(self.canvas)
+        love.graphics.clear()
+
+        Logger.notice("canvas id: "..self.id)
+
+        self.children.apply(
+            function(child)
+                Logger.notice("rendering child: "..child.id.." to canvas id: "..self.id)
+                love.graphics.draw(child.canvas, child.x, child.y)
+            end
+        )
+
+        love.graphics.setCanvas()
+
+        if Scene.drawGizmos then
+            self.drawGizmo()
+        end
+
         if self.shader ~= nil then
             self.shader.setActive(true)
         end
 
-        self.drawInternal()
-
-        love.graphics.setCanvas()
-
-        if self.canvas ~= nil then
+        if self.parent == nil then
             love.graphics.draw(self.canvas, self.x, self.y)
         end
 
         if self.shader ~= nil then
             self.shader.setActive(false)
-        end
-
-        self.drawChildren()
-
-        if Scene.drawGizmos then
-            self.drawGizmo()
         end
     end
 

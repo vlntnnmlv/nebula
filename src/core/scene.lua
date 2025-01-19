@@ -75,6 +75,8 @@ Scene.new = function(id)
 
         self.nodes[0].update(dt)
 
+        if self.focusElement == nil then return end
+
         self.focusElement.updateKeys()
     end
 
