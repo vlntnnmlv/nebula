@@ -99,20 +99,31 @@ local methods = {
     draw = function(this)
         if not this.active then return end
 
-        love.graphics.setCanvas(this.canvas)
-        love.graphics.clear(1.0, 1.0, 1.0, 1.0)
+        love.graphics.setCanvas(this.canvas) -- set render target to self canvas
+        love.graphics.clear() -- clear self canvas to complete transparancy
 
-        love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a)
-        this.drawInternal()
+        love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a) -- set render color to self color
+        this.drawInternal() -- draw self to self canvas
 
-        love.graphics.setCanvas()
+         -- render children
+        this.children.apply(
+            function(child)
+                child.draw() -- render child to it's canvas
+                love.graphics.setCanvas(this.canvas) -- render child canvas to self canvas
+                love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
+                this.setShaderActive(true)
+                love.graphics.draw(child.canvas, child.x, child.y)
+                this.setShaderActive(false)
+                love.graphics.setCanvas()
+            end
+        )
 
-        love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
-        love.graphics.draw(this.canvas, this.x, this.y)
-
-        this.children.apply(function(child) child.draw() end)
-
-        love.graphics.setCanvas()
+        -- render to the screen if this is root node
+        if this.parent == nil then
+            love.graphics.setCanvas()
+            love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
+            love.graphics.draw(this.canvas, this.x, this.y)
+        end
 
         if Scene.drawGizmos then
             love.graphics.setCanvas(this.scene.gizmoCanvas)
@@ -122,6 +133,8 @@ local methods = {
     end,
 
     drawGizmo = function(this)
+        -- NOTE: There is something weird with window size, as it is bigger by one pixel than it should've been.
+        -- NOTE: Also, I  don't know how lines are actualy rendered in polygon, seems like it's trying to fade alpha out near the edges.
         love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
         love.graphics.setLineWidth(2)
         love.graphics.polygon(

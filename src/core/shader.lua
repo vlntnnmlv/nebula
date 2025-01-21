@@ -15,10 +15,8 @@ Shader.new = function(shaderName)
 
     self.setActive = function(active)
         if active then
-            Logger.notice("Shader "..self.id.." is on!")
             love.graphics.setShader(self.shader)
         else
-            Logger.notice("Shader "..self.id.." is off!")
             love.graphics.setShader()
         end
     end
