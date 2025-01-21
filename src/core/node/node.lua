@@ -1,182 +1,186 @@
-dofile("src/core/palette.lua")
-dofile("src/core/list.lua")
-dofile("src/core/shader.lua")
+require("core/class")
 
-Node = {}
+require("core/list")
+require("core/palette")
+require("core/shader")
 
-Node.new = function(scene, parent, x, y, w, h)
-    local self = {}
+local methods = {
+    -- UI tree
+    linkChild = function(this, child)
+        this.children.append(child)
+    end,
 
-    self.scene = scene
-    self.parent = parent
-    self.children = List.new()
+    remove = function(this)
+        this.parent.children.filter(function(node) return node.id == this.id end, true)
+    end,
 
-    self.shader = Shader.new("image")
-    self.setColor(Color(1.0, 1.0, 1.0, 1.0))
+    getParentID = function(this)
+        if this.parent == nil then return nil end
 
-    self.ignoreEvents = false
-    self.active = true
+        return this.parent.id
+    end,
 
-    if self.parent ~= nil then
-        self.parent.linkChild(self)
-    end
+    -- Events processing
+    updateInternal = function(this, dt) end,
 
-    self.w = w
-    self.h = h
-    self.x = x
-    self.y = y
+    update = function(this, dt)
+        if not this.active then return end
 
-    self.canvas = love.graphics.newCanvas(self.w, self.h, { format = "rgba8", mipmaps = "none"})
+        if this.shader ~= nil then this.shader.update() end
 
-    self.setColor = function(color)
-        self.color = color
+        this.updateInternal(dt)
 
-        if self.shader ~= nil then
-            self.shader.setParameter("iColor", { color.r, color.g, color.b, color.a })
-        end
-    end
+        this.updateState(dt)
+    end,
 
-    self.setSize = function(newW, newH)
-        self.w = newW
-        self.h = newH
+    updateChildren = function(this, dt)
+        this.children.apply(function(child) return child.update(dt) end)
+    end,
 
-        local cw, ch = 1, 1
-        if self.w > 1 then cw = self.w end
-        if self.h > 1 then ch = self.h end
-
-        self.canvas:release()
-        self.canvas = love.graphics.newCanvas(cw, ch)
-    end
-
-    self.setShader = function(shader)
-        self.shader = Shader.new(shader)
-    end
-
-    self.setShaderActive = function(active)
-        if self.shader == nil then return end
-
-        self.shader.setActive(active)
-    end
-
-    self.linkChild = function(child)
-        self.children.append(child)
-    end
-
-    self.remove = function()
-        self.parent.children.filter(function(node) return node.id == self.id end, true)
-    end
-
-    self.getParentID = function()
-        if self.parent == nil then return nil end
-
-        return self.parent.id
-    end
-
-    self.draw = function()
-        if not self.active then return end
-
-        love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
-
-        love.graphics.setCanvas(self.canvas)
-        love.graphics.clear(1.0, 1.0, 1.0, 1.0)
-
-        self.drawInternal()
-
-        love.graphics.setCanvas()
-
-        love.graphics.draw(self.canvas, self.x, self.y)
-
-        self.children.apply(function(child) child.draw() end)
-
-        love.graphics.setCanvas()
-
-        if Scene.drawGizmos then
-            love.graphics.setCanvas(self.scene.gizmoCanvas)
-            self.drawGizmo()
-            love.graphics.setCanvas()
-        end
-    end
-
-    self.drawGizmo = function()
-        love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
-        love.graphics.polygon(
-            "line",
-            self.x, self.y,
-            self.x + self.w - 1, self.y,
-            self.x + self.w - 1, self.y + self.h - 1,
-            self.x, self.y + self.h - 1
-        )
-
-        love.graphics.print(self.id, self.x + self.w - 20, self.y + 7)
-
-        if self.scene.focusElement == self then
-            love.graphics.circle("fill", self.x + 7, self.y + 7, 5)
-        end
-
-        love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
-    end
-
-    self.drawInternal = function()
-        love.graphics.polygon(
-            "fill",
-            0, 0,
-            0 + self.w - 1, 0,
-            0 + self.w - 1, 0 + self.h - 1,
-            0, 0 + self.h - 1
-        )
-    end
-
-    self.updateInternal = function(dt) end
-
-    self.update = function(dt)
-        if not self.active then return end
-
-        if self.shader ~= nil then self.shader.update() end
-
-        self.updateInternal(dt)
-
-        self.updateState(dt)
-    end
-
-    self.updateChildren = function(dt)
-        self.children.apply(function(child) return child.update(dt) end)
-    end
-
-    self.updateState = function(dt)        
-        if self.ignoreEvents then return false end
+    updateState = function(this, dt)
+        if this.ignoreEvents then return false end
 
         local mouseX, mouseY = love.mouse.getPosition()
-        if mouseX <= self.x or mouseX >= self.x + self.w or mouseY <= self.y or mouseY >= self.y + self.h then
+        if mouseX <= this.x or mouseX >= this.x + this.w or mouseY <= this.y or mouseY >= this.y + this.h then
             return false
         end
 
-        self.scene.focusElement = self
+        this.scene.focusElement = this
 
-        self.updateChildren(dt)
-    end
+        this.updateChildren(dt)
+    end,
 
-    self.keyActions = { }
+    setKeyAction = function(this, key, action)
+        this.keyActions[key] = action
+    end,
 
-    self.setKeyAction = function(key, action)
-        self.keyActions[key] = action
-    end
-
-    self.updateKeys = function()
-        for key, action in pairs(self.keyActions) do
+    updateKeys = function(this)
+        for key, action in pairs(this.keyActions) do
             if Keys.held[key] then
                 action()
             end
         end
+    end,
+
+    setAction = function(this, action)
+        this.action = action
+    end,
+
+    -- Rendering
+    setColor = function(this, color)
+        this.color = color
+
+        if this.shader ~= nil then
+            this.shader.setParameter("iColor", { color.r, color.g, color.b, color.a })
+        end
+    end,
+
+    setSize = function(this, newW, newH)
+        this.w = newW
+        this.h = newH
+
+        local cw, ch = 1, 1
+        if this.w > 1 then cw = this.w end
+        if this.h > 1 then ch = this.h end
+
+        this.canvas:release()
+        this.canvas = love.graphics.newCanvas(cw, ch)
+    end,
+
+    setShader = function(this, shader)
+        this.shader = Shader.new(shader)
+    end,
+
+    setShaderActive = function(this, active)
+        if this.shader == nil then return end
+
+        this.shader.setActive(active)
+    end,
+
+    draw = function(this)
+        if not this.active then return end
+
+        love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a)
+
+        love.graphics.setCanvas(this.canvas)
+        love.graphics.clear(1.0, 1.0, 1.0, 1.0)
+
+        this.drawInternal()
+
+        love.graphics.setCanvas()
+
+        love.graphics.draw(this.canvas, this.x, this.y)
+
+        this.children.apply(function(child) child.draw() end)
+
+        love.graphics.setCanvas()
+
+        if Scene.drawGizmos then
+            love.graphics.setCanvas(this.scene.gizmoCanvas)
+            this.drawGizmo()
+            love.graphics.setCanvas()
+        end
+    end,
+
+    drawGizmo = function(this)
+        love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
+        love.graphics.polygon(
+            "line",
+            this.x, this.y,
+            this.x + this.w - 1, this.y,
+            this.x + this.w - 1, this.y + this.h - 1,
+            this.x, this.y + this.h - 1
+        )
+
+        love.graphics.print(this.id, this.x + this.w - 20, this.y + 7)
+
+        if this.scene.focusElement == this then
+            love.graphics.circle("fill", this.x + 7, this.y + 7, 5)
+        end
+
+        love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a)
+    end,
+
+    drawInternal = function(this)
+        -- love.graphics.polygon(
+        --     "fill",
+        --     0, 0,
+        --     0 + this.w - 1, 0,
+        --     0 + this.w - 1, 0 + this.h - 1,
+        --     0, 0 + this.h - 1
+        -- )
+    end
+}
+
+local constructor = function(this, scene, parent, x, y, w, h)
+    -- UI tree
+    this.scene = scene
+    this.parent = parent
+    this.children = List.new()
+
+    if this.parent ~= nil then
+        this.parent.linkChild(this)
     end
 
-    self.setAction = function(action)
-        self.action = action
-    end
+    this.scene.registerNode(this)
 
-    self.scene.registerNode(self)
+    -- Events processing
+    this.ignoreEvents = false
+    this.active = true
+    this.keyActions = { }
 
-    return self
+    -- Rendering
+    this.canvas = love.graphics.newCanvas(this.w, this.h, { format = "rgba8", mipmaps = "none"})
+    this.shader = Shader.new("image")
+    this.setColor(Color(1.0, 1.0, 1.0, 1.0))
+
+    this.w = w
+    this.h = h
+    this.x = x
+    this.y = y
 end
+
+Node = AssembleClass(constructor, methods)
 
 Node.text = function(scene, parent, text, cx, cy, fontSize, incept)
     -- TODO: Clean this mess, why we are calculating this two times?
@@ -249,6 +253,7 @@ Node.image = function(scene, parent, x, y, w, h, image)
     end
 
     self.drawInternal = function()
+        Logger.notice("Draw image")
         love.graphics.draw(self.image, 0 + self.w / 2, 0 + self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
     end
 

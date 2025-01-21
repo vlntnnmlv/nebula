@@ -1,93 +1,96 @@
-dofile("src/core/scene.lua")
-dofile("src/core/args.lua")
-dofile("src/core/logger.lua")
-dofile("src/core/keys.lua")
 
-SCREEN_WIDTH, SCREEN_HEIGHT = nil, nil
+-- package.path = package.path..";./src/?.lua"
 
-local function exit()
-    Logger.dispose()
-    love.event.quit()
-end
+-- require("core/scene")
+-- require("core/args")
+-- require("core/logger")
+-- require("core/keys")
 
-local function init(args)
-    love.graphics.setDefaultFilter("nearest", "nearest")
-    love.graphics.setBlendMode("alpha", "alphamultiply")
-    love.graphics.setBackgroundColor(1.0, 1.0, 1.0, 1.0)
+-- SCREEN_WIDTH, SCREEN_HEIGHT = nil, nil
 
-    love.graphics.setFont(love.graphics.newFont("resources/fonts/alagard.ttf", 32))
+-- local function exit()
+--     Logger.dispose()
+--     love.event.quit()
+-- end
 
-    love.mouse.setCursor(love.mouse.newCursor(love.image.newImageData("resources/textures/cursor.png"), 0, 0))
+-- local function init(args)
+--     love.graphics.setDefaultFilter("nearest", "nearest")
+--     love.graphics.setBlendMode("alpha", "alphamultiply")
+--     love.graphics.setBackgroundColor(1.0, 1.0, 1.0, 1.0)
 
-    local argsResults = HandleArgs(args)
-    SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
+--     love.graphics.setFont(love.graphics.newFont("resources/fonts/alagard.ttf", 32))
 
-    Scene.loadScenes("src/game/scenes")
+--     love.mouse.setCursor(love.mouse.newCursor(love.image.newImageData("resources/textures/cursor.png"), 0, 0))
 
-    Scene.switchScene(argsResults.scene)
-end
+--     local argsResults = HandleArgs(args)
+--     SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
 
-function love.load(args)
-    init(args)
-end
+--     Scene.loadScenes("src/game/scenes")
 
-function love.draw()
-    Scene.current.drawAll()
-end
+--     Scene.switchScene(argsResults.scene)
+-- end
 
-function love.keyreleased(key)
-    Keys.released(key)
-
-    if key == "escape" then
-        exit()
-    elseif key == "p" then
-        love.graphics.captureScreenshot(os.date("%m-%d-%Y_%H%-M-%S", os.time())..".png")
-    end
-end
-
-function love.keypressed(key)
-    Keys.pressed(key)
-end
-
-function love.update(dt)
-    Scene.current.updateAll(dt)
-end
-
-function love.mousepressed(_, _, _)
-    Scene.current.updateMouseButtonEvent(true)
-end
-
-function love.mousereleased(_, _, _)
-    Scene.current.updateMouseButtonEvent(false)
-end
-
--- RootCanvas = nil;
--- RootShader = nil;
-
--- PixelCanvas = nil;
--- PixelShader = nil;
-
--- function love.load()
---     RootCanvas = love.graphics.newCanvas(400, 400)
-
---     RootShader = love.graphics.newShader("resources/shaders/shine.glsl");
---     RootShader:send("iColor", { 1.0, 0.0, 0.0, 1.0})
-
---     PixelCanvas = love.graphics.newCanvas(400, 400)
-
---     PixelShader = love.graphics.newShader("resources/shaders/pixelize.glsl");
---     PixelShader:send("iScale", { 32, 32})
+-- function love.load(args)
+--     init(args)
 -- end
 
 -- function love.draw()
---     love.graphics.setShader(RootShader)
---     RootShader:send("iTime", love.timer.getTime())
---     love.graphics.setCanvas(PixelCanvas)
---     love.graphics.clear()
-
---     love.graphics.draw(RootCanvas, 0, 0)
-
---     love.graphics.setCanvas()
---     love.graphics.setShader(PixelShader)
---     love.graphics.draw(PixelCanvas, 0, 0)
+--     Scene.current.drawAll()
 -- end
+
+-- function love.keyreleased(key)
+--     Keys.released(key)
+
+--     if key == "escape" then
+--         exit()
+--     elseif key == "p" then
+--         love.graphics.captureScreenshot(os.date("%m-%d-%Y_%H%-M-%S", os.time())..".png")
+--     end
+-- end
+
+-- function love.keypressed(key)
+--     Keys.pressed(key)
+-- end
+
+-- function love.update(dt)
+--     Scene.current.updateAll(dt)
+-- end
+
+-- function love.mousepressed(_, _, _)
+--     Scene.current.updateMouseButtonEvent(true)
+-- end
+
+-- function love.mousereleased(_, _, _)
+--     Scene.current.updateMouseButtonEvent(false)
+-- end
+
+-- -- RootCanvas = nil;
+-- -- RootShader = nil;
+
+-- -- PixelCanvas = nil;
+-- -- PixelShader = nil;
+
+-- -- function love.load()
+-- --     RootCanvas = love.graphics.newCanvas(400, 400)
+
+-- --     RootShader = love.graphics.newShader("resources/shaders/shine.glsl");
+-- --     RootShader:send("iColor", { 1.0, 0.0, 0.0, 1.0})
+
+-- --     PixelCanvas = love.graphics.newCanvas(400, 400)
+
+-- --     PixelShader = love.graphics.newShader("resources/shaders/pixelize.glsl");
+-- --     PixelShader:send("iScale", { 32, 32})
+-- -- end
+
+-- -- function love.draw()
+-- --     love.graphics.setShader(RootShader)
+-- --     RootShader:send("iTime", love.timer.getTime())
+-- --     love.graphics.setCanvas(PixelCanvas)
+-- --     love.graphics.clear()
+
+-- --     love.graphics.draw(RootCanvas, 0, 0)
+
+-- --     love.graphics.setCanvas()
+-- --     love.graphics.setShader(PixelShader)
+-- --     love.graphics.draw(PixelCanvas, 0, 0)
+-- -- end

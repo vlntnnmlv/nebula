@@ -1,4 +1,4 @@
-dofile("src/core/node/node.lua")
+require("core/node/node")
 
 GIF = {}
 

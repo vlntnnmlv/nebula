@@ -1,4 +1,4 @@
-dofile("src/core/list.lua")
+require("core/list")
 
 Shader = {}
 
