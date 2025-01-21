@@ -41,7 +41,7 @@ Scene.new = function(id)
     self.id = id
     Scene.data[id] = self
 
-    self.gizmoCanvas = love.graphics.newCanvas(SCREEN_WIDTH, SCREEN_HEIGHT)
+    self.gizmoCanvas = love.graphics.newCanvas(SCREEN_WIDTH, SCREEN_HEIGHT, { format = "rgba8", mipmaps = "none"})
 
     self.nodes = {}
     self.nodesCount = 0
@@ -65,12 +65,13 @@ Scene.new = function(id)
         if self.nodesCount == 0 then return end
 
         love.graphics.setCanvas(self.gizmoCanvas)
-        love.graphics.clear(1.0, 1.0, 1.0, 1.0)
+        love.graphics.clear()
         love.graphics.setCanvas()
 
-        love.graphics.clear(1.0, 1.0, 1.0, 1.0)
+        love.graphics.clear()
         self.nodes[0].draw()
 
+        love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
         love.graphics.draw(self.gizmoCanvas, 0, 0)
     end
 

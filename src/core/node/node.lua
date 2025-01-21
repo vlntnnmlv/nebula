@@ -1,5 +1,4 @@
 require("core/class")
-
 require("core/list")
 require("core/palette")
 require("core/shader")
@@ -100,15 +99,15 @@ local methods = {
     draw = function(this)
         if not this.active then return end
 
-        love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a)
-
         love.graphics.setCanvas(this.canvas)
         love.graphics.clear(1.0, 1.0, 1.0, 1.0)
 
+        love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a)
         this.drawInternal()
 
         love.graphics.setCanvas()
 
+        love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
         love.graphics.draw(this.canvas, this.x, this.y)
 
         this.children.apply(function(child) child.draw() end)
@@ -124,31 +123,32 @@ local methods = {
 
     drawGizmo = function(this)
         love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
+        love.graphics.setLineWidth(2)
         love.graphics.polygon(
             "line",
-            this.x, this.y,
-            this.x + this.w - 1, this.y,
+            1 + this.x, 1 + this.y,
+            this.x + this.w - 1, 1 + this.y,
             this.x + this.w - 1, this.y + this.h - 1,
-            this.x, this.y + this.h - 1
+            1 + this.x, this.y + this.h - 1
         )
 
-        love.graphics.print(this.id, this.x + this.w - 20, this.y + 7)
+        love.graphics.print(this.id, this.x + this.w - 20, this.y + 4)
 
         if this.scene.focusElement == this then
-            love.graphics.circle("fill", this.x + 7, this.y + 7, 5)
+            love.graphics.circle("fill", this.x + 9, this.y + 9, 5)
         end
 
         love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a)
     end,
 
     drawInternal = function(this)
-        -- love.graphics.polygon(
-        --     "fill",
-        --     0, 0,
-        --     0 + this.w - 1, 0,
-        --     0 + this.w - 1, 0 + this.h - 1,
-        --     0, 0 + this.h - 1
-        -- )
+        love.graphics.polygon(
+            "fill",
+            0, 0,
+            0 + this.w - 1, 0,
+            0 + this.w - 1, 0 + this.h - 1,
+            0, 0 + this.h - 1
+        )
     end
 }
 
@@ -170,7 +170,7 @@ local constructor = function(this, scene, parent, x, y, w, h)
     this.keyActions = { }
 
     -- Rendering
-    this.canvas = love.graphics.newCanvas(this.w, this.h, { format = "rgba8", mipmaps = "none"})
+    this.canvas = love.graphics.newCanvas(this.w, this.h, { format = "rgba8" })
     this.shader = Shader.new("image")
     this.setColor(Color(1.0, 1.0, 1.0, 1.0))
 
