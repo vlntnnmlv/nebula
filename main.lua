@@ -12,7 +12,7 @@ end
 
 local function init(args)
     love.graphics.setDefaultFilter("nearest", "nearest")
-    love.graphics.setBlendMode("alpha") -- , "alphamultiply")
+    love.graphics.setBlendMode("alpha", "alphamultiply")
     love.graphics.setBackgroundColor(1.0, 1.0, 1.0, 1.0)
 
     love.graphics.setFont(love.graphics.newFont("resources/fonts/alagard.ttf", 32))
@@ -76,7 +76,7 @@ end
 --     PixelCanvas = love.graphics.newCanvas(400, 400)
 
 --     PixelShader = love.graphics.newShader("resources/shaders/pixelize.glsl");
---     PixelShader:send("iScale", { 16, 16})
+--     PixelShader:send("iScale", { 32, 32})
 -- end
 
 -- function love.draw()

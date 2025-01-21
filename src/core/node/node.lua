@@ -12,7 +12,7 @@ Node.new = function(scene, parent, x, y, w, h)
     self.children = List.new()
 
     self.shader = Shader.new("image")
-    self.color = Color(1, 1, 1, 1)
+    self.setColor(Color(1.0, 1.0, 1.0, 1.0))
 
     self.ignoreEvents = false
     self.active = true
@@ -72,45 +72,23 @@ Node.new = function(scene, parent, x, y, w, h)
         return self.parent.id
     end
 
-    self.drawChildren = function()
-        self.children.apply(function(child) child.draw() end)
-    end
-
     self.draw = function()
         if not self.active then return end
 
         love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
 
         love.graphics.setCanvas(self.canvas)
-        love.graphics.clear(0, 0, 0, 0)
+        love.graphics.clear(1.0, 1.0, 1.0, 1.0)
 
         self.drawInternal()
 
-        -- love.graphics.setCanvas()
-
-        -- self.drawChildren()
-
-        -- love.graphics.setCanvas(self.canvas)
-
-        self.children.apply(
-            function(child)
-                child.draw()
-                child.setShaderActive(true)
-                Logger.notice("Node "..child.id.." is rendered on parent "..self.id)
-                love.graphics.draw(child.canvas, child.x, child.y)
-                child.setShaderActive(false)
-            end
-        )
-
         love.graphics.setCanvas()
 
-        if self.parent == nil then
-            love.graphics.clear()
-            self.setShaderActive(true)
-            Logger.notice("Root is rendered")
-            love.graphics.draw(self.canvas, self.x, self.y)
-            self.setShaderActive(false)
-        end
+        love.graphics.draw(self.canvas, self.x, self.y)
+
+        self.children.apply(function(child) child.draw() end)
+
+        love.graphics.setCanvas()
 
         if Scene.drawGizmos then
             love.graphics.setCanvas(self.scene.gizmoCanvas)
@@ -250,7 +228,7 @@ end
 Node.image = function(scene, parent, x, y, w, h, image)
     local self = Node.new(scene, parent, x, y, w, h)
     self.shader = Shader.new("image")
-    
+
     self.imageData = love.image.newImageData("resources/textures/"..image)
     self.image = love.graphics.newImage(self.imageData)
 
