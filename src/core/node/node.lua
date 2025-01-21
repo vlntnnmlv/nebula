@@ -40,11 +40,9 @@ local methods = {
         if this.ignoreEvents then return false end
 
         local mouseX, mouseY = love.mouse.getPosition()
-        if mouseX <= this.x or mouseX >= this.x + this.w or mouseY <= this.y or mouseY >= this.y + this.h then
-            return false
+        if mouseX > this.x and mouseX < this.x + this.w and mouseY > this.y and mouseY < this.y + this.h then
+            this.scene.focusElement = this
         end
-
-        this.scene.focusElement = this
 
         this.updateChildren(dt)
     end,
@@ -105,15 +103,18 @@ local methods = {
         love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a) -- set render color to self color
         this.drawInternal() -- draw self to self canvas
 
-         -- render children
+        love.graphics.setCanvas()
+        local data = this.canvas:newImageData();
+
+        -- render children
         this.children.apply(
             function(child)
                 child.draw() -- render child to it's canvas
-                love.graphics.setCanvas(this.canvas) -- render child canvas to self canvas
                 love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
-                this.setShaderActive(true)
-                love.graphics.draw(child.canvas, child.x, child.y)
-                this.setShaderActive(false)
+                love.graphics.setCanvas(this.canvas) -- render child canvas to self canvas
+                child.setShaderActive(true)
+                love.graphics.draw(child.canvas, child.x - this.x, child.y - this.y)
+                child.setShaderActive(false)
                 love.graphics.setCanvas()
             end
         )
@@ -122,7 +123,9 @@ local methods = {
         if this.parent == nil then
             love.graphics.setCanvas()
             love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
+            this.setShaderActive(true)
             love.graphics.draw(this.canvas, this.x, this.y)
+            this.setShaderActive(false)
         end
 
         if Scene.drawGizmos then
@@ -130,6 +133,16 @@ local methods = {
             this.drawGizmo()
             love.graphics.setCanvas()
         end
+    end,
+
+    drawInternal = function(this)
+        love.graphics.polygon(
+            "fill",
+            0, 0,
+            0 + this.w - 1, 0,
+            0 + this.w - 1, 0 + this.h - 1,
+            0, 0 + this.h - 1
+        )
     end,
 
     drawGizmo = function(this)
@@ -152,16 +165,6 @@ local methods = {
         end
 
         love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a)
-    end,
-
-    drawInternal = function(this)
-        love.graphics.polygon(
-            "fill",
-            0, 0,
-            0 + this.w - 1, 0,
-            0 + this.w - 1, 0 + this.h - 1,
-            0, 0 + this.h - 1
-        )
     end
 }
 
@@ -182,20 +185,20 @@ local constructor = function(this, scene, parent, x, y, w, h)
     this.active = true
     this.keyActions = { }
 
-    -- Rendering
-    this.canvas = love.graphics.newCanvas(this.w, this.h, { format = "rgba8" })
-    this.shader = Shader.new("image")
-    this.setColor(Color(1.0, 1.0, 1.0, 1.0))
-
     this.w = w
     this.h = h
     this.x = x
     this.y = y
+
+    -- Rendering
+    this.canvas = love.graphics.newCanvas(this.w, this.h, { format = "rgba8" })
+    this.shader = Shader.new("image")
+    this.setColor(Color(1.0, 1.0, 1.0, 1.0))
 end
 
 Node = AssembleClass(constructor, methods)
 
-Node.text = function(scene, parent, text, cx, cy, fontSize, incept)
+Node.text = function(scene, parent, text, cx, cy, fontSize)
     -- TODO: Clean this mess, why we are calculating this two times?
     local font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
 
@@ -210,19 +213,10 @@ Node.text = function(scene, parent, text, cx, cy, fontSize, incept)
         self.h = self.font:getBaseline(self.text)
         self.x = self.cx - self.w / 2
         self.y = self.cy - self.h / 2
-
-        if self.incept then
-            if self.incepted == nil then
-                self.incepted = Node.text(self.scene, self, text, cx + 2, cy + 2, fontSize - 1, false)
-            else
-                self.incepted.setText(self.text)
-            end
-        end
     end
 
     self.text = text
     self.font = font
-    self.incept = incept
     self.cx = cx
     self.cy = cy
 
