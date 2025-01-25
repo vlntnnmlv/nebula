@@ -64,6 +64,7 @@ Cosmos.new = function(scene, parent, w, h)
     end
 
     self.updateInternal = function(dt)
+        print("!")
         local mouseX, mouseY = love.mouse.getPosition()
 
         if self.currentPlanet ~= nil then
