@@ -5,12 +5,17 @@ require("core/shader")
 
 Node = CreateClass()
 
+-- TODO:
+-- This are default values for Node object.
+-- However, must not assign tables here, because it's gonna be common among all Node object.
+-- Find out how to properly store static variables, and a better way to set default values.
+-- (Move this to init method?)
 Node.scene = nil
 Node.parent = nil
-Node.children = List.new()
+Node.children = nil
 Node.ignoreEvents = false
 Node.active = true
-Node.keyActions = {}
+Node.keyActions = nil
 Node.w = 0
 Node.h = 0
 Node.x = 0
@@ -30,6 +35,8 @@ end
 function Node:init(scene, parent, x, y, w, h)
     self.scene = scene
     self.parent = parent
+    self.children = List.new()
+    self.keyActions = nil
 
     if self.parent ~= nil then
         self.parent:linkChild(self)
@@ -151,12 +158,12 @@ function Node:draw()
     -- render children
     self.children.apply(
         function(child)
-            child.draw() -- render child to it's canvas
+            child:draw() -- render child to it's canvas
             love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
             love.graphics.setCanvas(self.canvas) -- render child canvas to self canvas
-            child.setShaderActive(true)
+            child:setShaderActive(true)
             love.graphics.draw(child.canvas, child.x - self.x, child.y - self.y)
-            child.setShaderActive(false)
+            child:setShaderActive(false)
             love.graphics.setCanvas()
         end
     )

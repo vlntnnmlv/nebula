@@ -34,7 +34,7 @@ function love.load(args)
 end
 
 function love.draw()
-    Scene.current.drawAll()
+    Scene.current:drawAll()
 end
 
 function love.keyreleased(key)

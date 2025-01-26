@@ -2,19 +2,23 @@
 require("core/list")
 
 Shader = CreateClass()
+Shader.count = 1
 
-function Shader.create(shaderName)
+function Shader.create(name)
     local shader = Shader:new()
 
-    shader:init(shaderName)
+    shader:init(name)
 
     return shader
 end
 
-function Shader:init(id)
+function Shader:init(name)
     self.i = 0
-    self.id = id
-    self.shader = love.graphics.newShader("resources/shaders/"..id..".glsl")
+    self.id = Shader.count
+    Shader.count = Shader.count + 1
+
+    self.name = name
+    self.shader = love.graphics.newShader("resources/shaders/"..self.name..".glsl")
     self.parameters = List.new()
 end
 
@@ -31,6 +35,7 @@ function Shader:setActive(active)
 end
 
 function Shader:update()
+    self.i = self.i + 1
     if self.parameters.len == 0 or self.shader == nil then return end
 
     self.parameters.apply(
