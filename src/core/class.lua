@@ -1,84 +1,89 @@
-function AssembleClass(classConstructor, classMethods, parentClass)
-    local class = {}
+-- look up for `k' in list of tables `plist'
+local function search(k, plist)
+    for i = 1, #plist do
+        local v = plist[i][k]     -- try `i'-th superclass
+        if v then return v end
+    end
+end
 
-    class.methods = classMethods
+function CreateClass(...)
+    local class = {} -- new class
+    local parents = {...}
 
-    class.base = function(...)
-        local base = nil
-        if parentClass == nil then
-            base = {}
-        else
-            base = parentClass.new(...)
-        end
+    -- class will search for each method in the list of its parents
+    setmetatable(
+        class,
+        {
+            __index = function(t, k)
+                return search(k, parents)
+            end
+        }
+    )
 
-        return base
+    -- prepare `class' to be the metatable of its instances
+    class.__index = class
+
+    -- define a new constructor for this new class
+    function class:new (o)
+        o = o or {}
+        setmetatable(o, class)
+        return o
     end
 
-    class.new = function(...)
-        local self = class.base(...)
-
-        for name, func in pairs(class.methods) do
-            if self[name] ~= nil then
-                self[name.."Base"] = self[name]
-                self[name] = nil
-            end
-
-            self[name] = function(...)
-                return func(self, ...)
-            end
-        end
-
-        classConstructor(self, ...)
-
-        return self
-    end
-
+    -- return new class
     return class
 end
 
----- Example
+-- -- Example
 
--- local numbermethods = {
---     log = function(this) print("N Log "..this.number) end,
---     add = function(this, number) return this.number + number end,
---     sub = function(this, number) return this.number - number end,
---     mult = function(this, number) return this.number * number end,
---     div = function(this, number) return this.number / number end
--- }
+-- Account = CreateClass()
+-- Account.balance = 444
 
--- local numberconstructor = function(this, number)
---     print("number constructor")
---     this.number = number
+-- function Account:deposit (v)
+--     self.balance = self.balance + v
 -- end
 
--- Number = AssembleClass(numberconstructor, numbermethods)
-
--- local n = Number.new(4)
-
--- n.log()
--- print(n.add(1))
--- print(n.sub(1))
--- print(n.mult(4))
--- print(n.div(4))
-
--- local numberstringconstructor = function(this, number, str)
---     print("numberstring constructor")
---     this.str = str
+-- function Account:withdraw (v)
+--     if v > self.balance then error"insufficient funds" end
+--     self.balance = self.balance - v
 -- end
 
--- local numberstringmethods = {
---     log = function(this)
---         this.logBase()
---         print("NS Log "..this.number.." "..this.str)
---     end,
--- }
+-- local a = Account:new{}
 
--- NumberString = AssembleClass(numberstringconstructor, numberstringmethods, Number)
+-- print(a.balance)
+-- a:deposit(100)
+-- print(a.balance)
+-- a:withdraw(200)
+-- print(a.balance)
 
--- local ns = NumberString.new(10, "Hi")
+-- SpecialAccount = CreateClass(Account)
 
--- ns.log()
--- print(ns.add(1))
--- print(ns.sub(1))
--- print(ns.mult(4))
--- print(ns.div(4))
+-- function SpecialAccount:withdraw(v)
+--     if v - self.balance >= self:getLimit() then
+--         error"insufficient funds"
+--     end
+--     self.balance = self.balance - v
+-- end
+
+-- function SpecialAccount:getLimit()
+--     return self.limit or 0
+-- end
+
+-- local s = SpecialAccount:new{balance = 500, limit = 1000}
+-- print(s.balance)
+-- print(s:getLimit())
+
+-- Named = CreateClass()
+
+-- function Named:getname ()
+--     return self.name
+-- end
+
+-- function Named:setname(n)
+--     self.name = n
+-- end
+
+-- NamedAccount = CreateClass(Account, Named)
+
+-- local account = NamedAccount:new({name = "Paul"})
+-- print(account:getname())     --> Paul

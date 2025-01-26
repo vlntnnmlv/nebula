@@ -1,4 +1,4 @@
-Logger = {}
+Logger = CreateClass()
 
 love.filesystem.setIdentity("nebula")
 
@@ -51,22 +51,22 @@ local function log(prefix, message, color, effect)
     end
 end
 
-Logger.error = function(message)
+function Logger.error(message)
     log("[ERROR]", message, colors.ERROR, effects.NORMAL)
 end
 
-Logger.warning = function(message)
+function Logger.warning(message)
     log("[WARNING]", message, colors.WARNING, effects.NORMAL)
 end
 
-Logger.success = function(message)
+function Logger.success(message)
     log("[SUCCESS]", message, colors.SUCCESS, effects.NORMAL)
 end
 
-Logger.notice = function(message)
+function Logger.notice(message)
     log("[NOTICE]", message, colors.NORMAL, effects.NORMAL)
 end
 
-Logger.dispose = function()
+function Logger.dispose()
     if Logger.file ~= nil then Logger.file:close() end
 end

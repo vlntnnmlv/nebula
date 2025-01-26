@@ -3,242 +3,253 @@ require("core/list")
 require("core/palette")
 require("core/shader")
 
-local methods = {
-    -- UI tree
-    linkChild = function(this, child)
-        this.children.append(child)
-    end,
+Node = CreateClass()
 
-    remove = function(this)
-        this.parent.children.filter(function(node) return node.id == this.id end, true)
-    end,
+Node.scene = nil
+Node.parent = nil
+Node.children = List.new()
+Node.ignoreEvents = false
+Node.active = true
+Node.keyActions = {}
+Node.w = 0
+Node.h = 0
+Node.x = 0
+Node.y = 0
+Node.canvas = nil
+Node.shader = nil
+Node.color = nil
 
-    getParentID = function(this)
-        if this.parent == nil then return nil end
+function Node.create(scene, parent, x, y, w, h)
+    local node = Node:new()
 
-        return this.parent.id
-    end,
+    node:init(scene, parent, x, y, w, h)
 
-    -- Events processing
-    updateInternal = function(this, dt) end,
+    return node
+end
 
-    update = function(this, dt)
-        if not this.active then return end
+function Node:init(scene, parent, x, y, w, h)
+    self.scene = scene
+    self.parent = parent
 
-        if this.shader ~= nil then this.shader.update() end
+    if self.parent ~= nil then
+        self.parent:linkChild(self)
+    end
 
-        this.updateInternal(dt)
+    self.scene:registerNode(self)
 
-        this.updateState(dt)
-    end,
+    self.w = w
+    self.h = h
+    self.x = x
+    self.y = y
 
-    updateChildren = function(this, dt)
-        this.children.apply(function(child) return child.update(dt) end)
-    end,
+    self.canvas = love.graphics.newCanvas(self.w, self.h, { format = "rgba8" })
+    self.shader = Shader.create("image")
+    self:setColor(Color(1.0, 1.0, 1.0, 1.0))
+end
 
-    updateState = function(this, dt)
-        if this.ignoreEvents then return false end
+-- UI Tree
+function Node:linkChild(child)
+    self.children.append(child)
+end
 
-        local mouseX, mouseY = love.mouse.getPosition()
-        if mouseX > this.x and mouseX < this.x + this.w and mouseY > this.y and mouseY < this.y + this.h then
-            this.scene.focusElement = this
+function Node:remove()
+    self.parent.children.filter(function(node) return node.id == self.id end, true)
+end
+
+function Node:getParentID()
+    if self.parent == nil then return nil end
+
+    return self.parent.id
+end
+
+-- Events processing
+function Node:updateInternal(dt) end
+
+function Node:update(dt)
+    if not self.active then return end
+
+    if self.shader ~= nil then self.shader:update() end
+
+    self:updateInternal(dt)
+
+    self:updateState(dt)
+end
+
+function Node:updateChildren(dt)
+    self.children.apply(function(child) return child:update(dt) end)
+end
+
+function Node:updateState(dt)
+    if self.ignoreEvents then return false end
+
+    local mouseX, mouseY = love.mouse.getPosition()
+    if mouseX > self.x and mouseX < self.x + self.w and mouseY > self.y and mouseY < self.y + self.h then
+        self.scene.focusElement = self
+    end
+
+    self:updateChildren(dt)
+end
+
+function Node:setKeyAction(key, action)
+    self.keyActions[key] = action
+end
+
+function Node:updateKeys()
+    for key, action in pairs(self.keyActions) do
+        if Keys.held[key] then
+            action()
         end
+    end
+end
 
-        this.updateChildren(dt)
-    end,
+function Node:setAction(action)
+    self.action = action
+end
 
-    setKeyAction = function(this, key, action)
-        this.keyActions[key] = action
-    end,
+-- Rendering
+function Node:setColor(color)
+    self.color = color
 
-    updateKeys = function(this)
-        for key, action in pairs(this.keyActions) do
-            if Keys.held[key] then
-                action()
-            end
-        end
-    end,
+    if self.shader ~= nil then
+        self.shader:setParameter("iColor", { color.r, color.g, color.b, color.a })
+    end
+end
 
-    setAction = function(this, action)
-        this.action = action
-    end,
+function Node:setSize(newW, newH)
+    self.w = newW
+    self.h = newH
 
-    -- Rendering
-    setColor = function(this, color)
-        this.color = color
+    local cw, ch = 1, 1
+    if self.w > 1 then cw = self.w end
+    if self.h > 1 then ch = self.h end
 
-        if this.shader ~= nil then
-            this.shader.setParameter("iColor", { color.r, color.g, color.b, color.a })
-        end
-    end,
+    self.canvas:release()
+    self.canvas = love.graphics.newCanvas(cw, ch)
+end
 
-    setSize = function(this, newW, newH)
-        this.w = newW
-        this.h = newH
+function Node:setShader(shader)
+    self.shader = Shader:new(shader)
+end
 
-        local cw, ch = 1, 1
-        if this.w > 1 then cw = this.w end
-        if this.h > 1 then ch = this.h end
+function Node:setShaderActive(active)
+    if self.shader == nil then return end
 
-        this.canvas:release()
-        this.canvas = love.graphics.newCanvas(cw, ch)
-    end,
+    self.shader:setActive(active)
+end
 
-    setShader = function(this, shader)
-        this.shader = Shader.new(shader)
-    end,
+function Node:draw()
+    if not self.active then return end
 
-    setShaderActive = function(this, active)
-        if this.shader == nil then return end
+    love.graphics.setCanvas(self.canvas) -- set render target to self canvas
+    love.graphics.clear() -- clear self canvas to complete transparancy
 
-        this.shader.setActive(active)
-    end,
+    love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a) -- set render color to self color
+    self:drawInternal() -- draw self to self canvas
 
-    draw = function(this)
-        if not this.active then return end
+    love.graphics.setCanvas()
 
-        love.graphics.setCanvas(this.canvas) -- set render target to self canvas
-        love.graphics.clear() -- clear self canvas to complete transparancy
-
-        love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a) -- set render color to self color
-        this.drawInternal() -- draw self to self canvas
-
-        love.graphics.setCanvas()
-        local data = this.canvas:newImageData();
-
-        -- render children
-        this.children.apply(
-            function(child)
-                child.draw() -- render child to it's canvas
-                love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
-                love.graphics.setCanvas(this.canvas) -- render child canvas to self canvas
-                child.setShaderActive(true)
-                love.graphics.draw(child.canvas, child.x - this.x, child.y - this.y)
-                child.setShaderActive(false)
-                love.graphics.setCanvas()
-            end
-        )
-
-        -- render to the screen if this is root node
-        if this.parent == nil then
-            love.graphics.setCanvas()
+    -- render children
+    self.children.apply(
+        function(child)
+            child.draw() -- render child to it's canvas
             love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
-            this.setShaderActive(true)
-            love.graphics.draw(this.canvas, this.x, this.y)
-            this.setShaderActive(false)
-        end
-
-        if Scene.drawGizmos then
-            love.graphics.setCanvas(this.scene.gizmoCanvas)
-            this.drawGizmo()
+            love.graphics.setCanvas(self.canvas) -- render child canvas to self canvas
+            child.setShaderActive(true)
+            love.graphics.draw(child.canvas, child.x - self.x, child.y - self.y)
+            child.setShaderActive(false)
             love.graphics.setCanvas()
         end
-    end,
+    )
 
-    drawInternal = function(this)
-        love.graphics.polygon(
-            "fill",
-            0, 0,
-            0 + this.w - 1, 0,
-            0 + this.w - 1, 0 + this.h - 1,
-            0, 0 + this.h - 1
-        )
-    end,
-
-    drawGizmo = function(this)
-        -- NOTE: There is something weird with window size, as it is bigger by one pixel than it should've been.
-        -- NOTE: Also, I  don't know how lines are actualy rendered in polygon, seems like it's trying to fade alpha out near the edges.
-        love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
-        love.graphics.setLineWidth(2)
-        love.graphics.polygon(
-            "line",
-            1 + this.x, 1 + this.y,
-            this.x + this.w - 1, 1 + this.y,
-            this.x + this.w - 1, this.y + this.h - 1,
-            1 + this.x, this.y + this.h - 1
-        )
-
-        love.graphics.print(this.id, this.x + this.w - 20, this.y + 4)
-
-        if this.scene.focusElement == this then
-            love.graphics.circle("fill", this.x + 9, this.y + 9, 5)
-        end
-
-        love.graphics.setColor(this.color.r, this.color.g, this.color.b, this.color.a)
-    end
-}
-
-local constructor = function(this, scene, parent, x, y, w, h)
-    -- UI tree
-    this.scene = scene
-    this.parent = parent
-    this.children = List.new()
-
-    if this.parent ~= nil then
-        this.parent.linkChild(this)
+    -- render to the screen if self is root node
+    if self.parent == nil then
+        love.graphics.setCanvas()
+        love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
+        self:setShaderActive(true)
+        love.graphics.draw(self.canvas, self.x, self.y)
+        self:setShaderActive(false)
     end
 
-    this.scene.registerNode(this)
-
-    -- Events processing
-    this.ignoreEvents = false
-    this.active = true
-    this.keyActions = { }
-
-    this.w = w
-    this.h = h
-    this.x = x
-    this.y = y
-
-    -- Rendering
-    this.canvas = love.graphics.newCanvas(this.w, this.h, { format = "rgba8" })
-    this.shader = Shader.new("image")
-    this.setColor(Color(1.0, 1.0, 1.0, 1.0))
+    if Scene.drawGizmos then
+        love.graphics.setCanvas(self.scene.gizmoCanvas)
+        self:drawGizmo()
+        love.graphics.setCanvas()
+    end
 end
 
-Node = AssembleClass(constructor, methods)
-
-Node.text = function(scene, parent, text, cx, cy, fontSize)
-    -- TODO: Clean this mess, why we are calculating this two times?
-    local font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
-
-    local w = font:getWidth(text)
-    local h = font:getHeight(text)
-    local self = Node.new(scene, parent, cx, cy, w, h)
-
-    self.shader = nil
-
-    self.restore = function()
-        self.w = self.font:getWidth(self.text)
-        self.h = self.font:getBaseline(self.text)
-        self.x = self.cx - self.w / 2
-        self.y = self.cy - self.h / 2
-    end
-
-    self.text = text
-    self.font = font
-    self.cx = cx
-    self.cy = cy
-
-    self.restore()
-
-    self.setText = function(text)
-        self.text = text
-
-        self.restore()
-    end
-
-    self.drawInternal = function()
-        love.graphics.setFont(self.font)
-        love.graphics.print(self.text, 0, 0)
-    end
-
-    return self
+function Node:drawInternal()
+    love.graphics.polygon(
+        "fill",
+        0, 0,
+        0 + self.w - 1, 0,
+        0 + self.w - 1, 0 + self.h - 1,
+        0, 0 + self.h - 1
+    )
 end
+
+function Node:drawGizmo()
+    -- NOTE: There is something weird with window size, as it is bigger by one pixel than it should've been.
+    -- NOTE: Also, I  don't know how lines are actualy rendered in polygon, seems like it's trying to fade alpha out near the edges.
+    love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
+    love.graphics.setLineWidth(2)
+    love.graphics.polygon(
+        "line",
+        1 + self.x, 1 + self.y,
+        self.x + self.w - 1, 1 + self.y,
+        self.x + self.w - 1, self.y + self.h - 1,
+        1 + self.x, self.y + self.h - 1
+    )
+
+    love.graphics.print(self.id, self.x + self.w - 20, self.y + 4)
+
+    if self.scene.focusElement == self then
+        love.graphics.circle("fill", self.x + 9, self.y + 9, 5)
+    end
+
+    love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
+end
+
+-- Node.text = function(scene, parent, text, cx, cy, fontSize)
+--     -- TODO: Clean self mess, why we are calculating self two times?
+--     local font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
+
+--     local w = font:getWidth(text)
+--     local h = font:getHeight(text)
+--     local self = Node.new(scene, parent, cx, cy, w, h)
+
+--     self.shader = nil
+
+--     self.restore = function()
+--         self.w = self.font:getWidth(self.text)
+--         self.h = self.font:getBaseline(self.text)
+--         self.x = self.cx - self.w / 2
+--         self.y = self.cy - self.h / 2
+--     end
+
+--     self.text = text
+--     self.font = font
+--     self.cx = cx
+--     self.cy = cy
+
+--     self.restore()
+
+--     self.setText = function(text)
+--         self.text = text
+
+--         self.restore()
+--     end
+
+--     self.drawInternal = function()
+--         love.graphics.setFont(self.font)
+--         love.graphics.print(self.text, 0, 0)
+--     end
+
+--     return self
+-- end
 
 Node.image = function(scene, parent, x, y, w, h, image)
     local self = Node.new(scene, parent, x, y, w, h)
-    self.shader = Shader.new("image")
+    self.shader = Shader:new("image")
 
     self.imageData = love.image.newImageData("resources/textures/"..image)
     self.image = love.graphics.newImage(self.imageData)

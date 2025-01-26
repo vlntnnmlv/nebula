@@ -1,11 +1,11 @@
-Keys = {}
+Keys = CreateClass()
 
 Keys.held = {}
 
-Keys.pressed = function(key)
+function Keys.pressed(key)
     Keys.held[key] = true
 end
 
-Keys.released = function(key)
+function Keys.released(key)
     Keys.held[key] = false
 end

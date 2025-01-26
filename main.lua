@@ -1,7 +1,6 @@
-
 package.path = package.path..";./src/?.lua"
 
-require("core/scene")
+require("core.scene")
 require("core/args")
 require("core/logger")
 require("core/keys")
@@ -53,44 +52,13 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-    Scene.current.updateAll(dt)
+    Scene.current:updateAll(dt)
 end
 
 function love.mousepressed(_, _, _)
-    Scene.current.updateMouseButtonEvent(true)
+    Scene.current:updateMouseButtonEvent(true)
 end
 
 function love.mousereleased(_, _, _)
-    Scene.current.updateMouseButtonEvent(false)
+    Scene.current:updateMouseButtonEvent(false)
 end
-
--- RootCanvas = nil;
--- RootShader = nil;
-
--- PixelCanvas = nil;
--- PixelShader = nil;
-
--- function love.load()
---     RootCanvas = love.graphics.newCanvas(400, 400)
-
---     RootShader = love.graphics.newShader("resources/shaders/shine.glsl");
---     RootShader:send("iColor", { 1.0, 0.0, 0.0, 1.0})
-
---     PixelCanvas = love.graphics.newCanvas(400, 400)
-
---     PixelShader = love.graphics.newShader("resources/shaders/pixelize.glsl");
---     PixelShader:send("iScale", { 32, 32})
--- end
-
--- function love.draw()
---     love.graphics.setShader(RootShader)
---     RootShader:send("iTime", love.timer.getTime())
---     love.graphics.setCanvas(PixelCanvas)
---     love.graphics.clear()
-
---     love.graphics.draw(RootCanvas, 0, 0)
-
---     love.graphics.setCanvas()
---     love.graphics.setShader(PixelShader)
---     love.graphics.draw(PixelCanvas, 0, 0)
--- end
