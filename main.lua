@@ -1,9 +1,22 @@
+-- TODO: Add global delta time
+-- TODO: Add updatable objects (pass to shaders, pass to animatons etc)
+-- TODO: Add coroutines system
+-- TODO: Multiple shaders to one node
+
 package.path = package.path..";./src/?.lua"
 
+require("core.class")
+require("core.node.node")
+require("core.node.image")
+require("core.node.text")
+require("core.shader")
+require("core.keys")
 require("core.scene")
-require("core/args")
-require("core/logger")
-require("core/keys")
+require("core.args")
+require("core.logger")
+require("core.palette")
+require("core.math")
+require("core.list")
 
 SCREEN_WIDTH, SCREEN_HEIGHT = nil, nil
 

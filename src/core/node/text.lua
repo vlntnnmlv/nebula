@@ -10,10 +10,11 @@ end
 function Text:init(scene, parent, str, cx, cy, fontSize)
     local font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
 
+    -- TODO: Fix doublicate calculation
     local w = font:getWidth(str)
     local h = font:getHeight(str)
 
-    Node.init(self, scene, parent, w, h, cx, cy)
+    Node.init(self, scene, parent, cx, cy, w, h)
 
     self.font = font
     self.str = str

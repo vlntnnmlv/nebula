@@ -1,6 +1,4 @@
 ---@diagnostic disable: deprecated
-require("core/list")
-
 Shader = CreateClass()
 Shader.count = 1
 

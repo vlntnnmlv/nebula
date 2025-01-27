@@ -14,12 +14,11 @@ player:setKeyAction("a", function() player.x = player.x - 1 end)
 player:setKeyAction("s", function() player.y = player.y + 1 end)
 player:setKeyAction("d", function() player.x = player.x + 1 end)
 
-local node = Node.create(sceneTest, root, 120, 120, 240, 240)
-node:setColor(Color(0.5, 0.0, 0.5, alpha))
+local node = Image.create(sceneTest, root, 120, 120, 240, 240, "eye.png")
 
-local text = Text.create(sceneTest, node, "hello, world!", node.x + node.w/2, node.y + node.h/2, 36)
-text:setColor(Color(1.0, 0, 0.0, 1.0))
-Logger.warning(text.w.." "..text.h)
+-- local text = Text.create(sceneTest, node, "hello, world!", node.x + node.w/2, node.y + node.h/2, 36)
+-- text:setColor(Color(1.0, 0, 0.0, 1.0))
+-- Logger.warning(text.w.." "..text.h)
 
-node:setKeyAction("v", function() alpha = alpha - 0.01 node:setColor(Color(0.5, 0.0, 0.5, alpha)) end)
-node:setKeyAction("b", function() alpha = alpha + 0.01 node:setColor(Color(0.5, 0.0, 0.5, alpha)) end)
+node:setKeyAction("v", function() alpha = alpha - 0.01 node:setAlpha(alpha) end)
+node:setKeyAction("b", function() alpha = alpha + 0.01 node:setAlpha(alpha) end)

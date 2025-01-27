@@ -1,5 +1,3 @@
-require("core/node/node")
-
 GIF = {}
 
 GIF.new = function(scene, parent, x, y, w, h, frames)

@@ -1,5 +1,3 @@
-dofile("src/core/node/node.lua")
-
 FPS = {}
 
 FPS.new = function(scene, parent, cx, cy, fontSize)

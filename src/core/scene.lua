@@ -1,6 +1,3 @@
-require("core/node/node")
-require("core/node/text")
-
 Scene = CreateClass()
 
 Scene.drawGizmos = false
@@ -28,10 +25,11 @@ function Scene.loadScenes(scenesDir)
     local backupScene = Scene.create("BackupScene404")
     local root = Node.create(backupScene, nil, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 
+    print("red", Palette.gizmoRed)
     Text.create(backupScene, root, "404", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 32, 64)
-        .setColor(Palette.gizmoRed)
+        :setColor(Palette.gizmoRed)
     Text.create(backupScene, root, "Set a scene using Scene.switchScene(sceneID)", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 32, 24)
-        .setColor(Palette.gizmoRed)
+        :setColor(Palette.gizmoRed)
 
     Scene.current = backupScene
     Logger.success("Backup scene set!")

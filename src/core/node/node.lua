@@ -1,8 +1,3 @@
-require("core/class")
-require("core/list")
-require("core/palette")
-require("core/shader")
-
 Node = CreateClass()
 
 -- TODO:
@@ -114,15 +109,32 @@ function Node:setAction(action)
 end
 
 -- Rendering
+local function clampColor(color)
+    color.r = Clamp(color.r)
+    color.g = Clamp(color.g)
+    color.b = Clamp(color.b)
+    color.a = Clamp(color.a)
+
+    return color
+end
+
 function Node:setColor(color)
-    self.color = color
+    self.color = clampColor(color)
 
     if self.shader ~= nil then
         self.shader:setParameter("iColor", { color.r, color.g, color.b, color.a })
     end
 end
 
-function Node:setSize(newW, newH)
+function Node:setAlpha(alpha)
+    self.color.a = Clamp(alpha)
+
+    if self.shader ~= nil then
+        self.shader:setParameter("iColor", { self.color.r, self.color.g, self.color.b, self.color.a })
+    end
+end
+
+function Node:resize(newW, newH)
     self.w = newW
     self.h = newH
 
@@ -221,37 +233,37 @@ function Node:drawGizmo()
     love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
 end
 
-Node.image = function(scene, parent, x, y, w, h, image)
-    local self = Node.new(scene, parent, x, y, w, h)
-    self.shader = Shader:new("image")
+-- Node.image = function(scene, parent, x, y, w, h, image)
+--     local self = Node.new(scene, parent, x, y, w, h)
+--     self.shader = Shader:new("image")
 
-    self.imageData = love.image.newImageData("resources/textures/"..image)
-    self.image = love.graphics.newImage(self.imageData)
+--     self.imageData = love.image.newImageData("resources/textures/"..image)
+--     self.image = love.graphics.newImage(self.imageData)
 
-    self.scaleX = self.w / self.imageData:getWidth()
-    self.scaleY = self.h / self.imageData:getHeight()
-    self.rotation = 0
-    self.originOffsetX = self.imageData:getWidth() / 2
-    self.originOffsetY = self.imageData:getHeight() / 2
-    self.shearX = 0
-    self.shearY = 0
+--     self.scaleX = self.w / self.imageData:getWidth()
+--     self.scaleY = self.h / self.imageData:getHeight()
+--     self.rotation = 0
+--     self.originOffsetX = self.imageData:getWidth() / 2
+--     self.originOffsetY = self.imageData:getHeight() / 2
+--     self.shearX = 0
+--     self.shearY = 0
 
-    local setSizeBase = self.setSize
-    self.setSize = function(newW, newH)
-        setSizeBase(newW, newH)
+--     local setSizeBase = self.setSize
+--     self.setSize = function(newW, newH)
+--         setSizeBase(newW, newH)
 
-        self.scaleX = self.w / self.imageData:getWidth()
-        self.scaleY = self.h / self.imageData:getHeight()
-    end
+--         self.scaleX = self.w / self.imageData:getWidth()
+--         self.scaleY = self.h / self.imageData:getHeight()
+--     end
 
-    self.drawInternal = function()
-        Logger.notice("Draw image")
-        love.graphics.draw(self.image, 0 + self.w / 2, 0 + self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
-    end
+--     self.drawInternal = function()
+--         Logger.notice("Draw image")
+--         love.graphics.draw(self.image, 0 + self.w / 2, 0 + self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
+--     end
 
-    self.rotate = function(rotation)
-        self.rotation = self.rotation + rotation
-    end
+--     self.rotate = function(rotation)
+--         self.rotation = self.rotation + rotation
+--     end
 
-    return self
-end
+--     return self
+-- end

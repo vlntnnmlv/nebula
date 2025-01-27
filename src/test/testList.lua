@@ -1,5 +1,3 @@
-dofile("src/core/list.lua")
-
 print("Create empty")
 local l = List.new()
 l.dump()
