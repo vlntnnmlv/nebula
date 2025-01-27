@@ -4,7 +4,6 @@ function Text.create(scene, parent, str, cx, cy, fontSize)
     local text = Text:new()
 
     text:init(scene, parent, str, cx, cy, fontSize)
-
     return text
 end
 
@@ -15,8 +14,6 @@ function Text:init(scene, parent, str, cx, cy, fontSize)
     local h = font:getHeight(str)
 
     Node.init(self, scene, parent, w, h, cx, cy)
-
-    self.shader = nil
 
     self.font = font
     self.str = str
@@ -41,5 +38,5 @@ end
 
 function Text:drawInternal()
     love.graphics.setFont(self.font)
-    love.graphics.print(self.text, 0, 0)
+    love.graphics.print(self.str, 0, 0)
 end

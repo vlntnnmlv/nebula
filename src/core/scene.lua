@@ -53,7 +53,7 @@ function Scene:init(id)
 
     self.nodes = {}
     self.nodesCount = 0
-    self.focusElement = nil
+    self.hoveredElement = nil
 
     self.scale = 1
     self.offsetX = 0
@@ -89,9 +89,11 @@ function Scene:updateAll(dt)
 
     self.nodes[0]:update(dt)
 
-    if self.focusElement == nil then return end
+    if self.hoveredElement == nil then return end
 
-    self.focusElement:updateKeys()
+    if self.pressedElement ~= nil then
+        self.pressedElement:updateKeys()
+    end
 end
 
 function Scene:updateMouseButtonEvent(pressed)
@@ -99,14 +101,14 @@ function Scene:updateMouseButtonEvent(pressed)
 
     self.nodes[0]:update(0)
 
-    if self.focusElement == nil or self.focusElement.action == nil then return end
+    if self.hoveredElement == nil then return end
+    self.pressedElement = self.hoveredElement
 
-    if pressed then
-        self.pressedElement = self.focusElement
-        self.focusElement:action(pressed)
+    if pressed and self.pressedElement.action ~= nil then
+        self.pressedElement:action(pressed)
     end
 
-    if not pressed and self.pressedElement ~= nil and self.pressedElement.id == self.focusElement.id and self.focusElement.action ~= nil then
-        self.focusElement:action(pressed)
+    if not pressed and self.pressedElement ~= nil and self.pressedElement.id == self.hoveredElement.id and self.hoveredElement.action ~= nil then
+        self.pressedElement:action(pressed)
     end
 end

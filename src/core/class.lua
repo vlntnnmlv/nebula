@@ -24,7 +24,7 @@ function CreateClass(...)
     class.__index = class
 
     -- define a new constructor for this new class
-    function class:new (o)
+    function class:new(o)
         o = o or {}
         setmetatable(o, class)
         return o

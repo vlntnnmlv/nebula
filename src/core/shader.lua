@@ -35,7 +35,6 @@ function Shader:setActive(active)
 end
 
 function Shader:update()
-    self.i = self.i + 1
     if self.parameters.len == 0 or self.shader == nil then return end
 
     self.parameters.apply(

@@ -36,7 +36,7 @@ function Node:init(scene, parent, x, y, w, h)
     self.scene = scene
     self.parent = parent
     self.children = List.new()
-    self.keyActions = nil
+    self.keyActions = {}
 
     if self.parent ~= nil then
         self.parent:linkChild(self)
@@ -91,7 +91,7 @@ function Node:updateState(dt)
 
     local mouseX, mouseY = love.mouse.getPosition()
     if mouseX > self.x and mouseX < self.x + self.w and mouseY > self.y and mouseY < self.y + self.h then
-        self.scene.focusElement = self
+        self.scene.hoveredElement = self
     end
 
     self:updateChildren(dt)
@@ -135,7 +135,7 @@ function Node:setSize(newW, newH)
 end
 
 function Node:setShader(shader)
-    self.shader = Shader:new(shader)
+    self.shader = Shader.create(shader)
 end
 
 function Node:setShaderActive(active)
@@ -197,7 +197,8 @@ end
 function Node:drawGizmo()
     -- NOTE: There is something weird with window size, as it is bigger by one pixel than it should've been.
     -- NOTE: Also, I  don't know how lines are actualy rendered in polygon, seems like it's trying to fade alpha out near the edges.
-    love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
+    -- love.graphics.setColor(Palette.gizmoRed.r, Palette.gizmoRed.g, Palette.gizmoRed.b, Palette.gizmoRed.a)
+    love.graphics.setColor(1.0 - self.color.r, 1.0 - self.color.g, 1.0 - self.color.b, 1.0)
     love.graphics.setLineWidth(2)
     love.graphics.polygon(
         "line",
@@ -209,50 +210,16 @@ function Node:drawGizmo()
 
     love.graphics.print(self.id, self.x + self.w - 20, self.y + 4)
 
-    if self.scene.focusElement == self then
+    if self.scene.hoveredElement == self then
         love.graphics.circle("fill", self.x + 9, self.y + 9, 5)
+    end
+
+    if self.scene.pressedElement == self then
+        love.graphics.polygon("fill", self.x + 23, self.y + 18, self.x + 31, self.y + 18, self.x + 27, self.y + 9)
     end
 
     love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
 end
-
--- Node.text = function(scene, parent, text, cx, cy, fontSize)
---     -- TODO: Clean self mess, why we are calculating self two times?
---     local font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
-
---     local w = font:getWidth(text)
---     local h = font:getHeight(text)
---     local self = Node.new(scene, parent, cx, cy, w, h)
-
---     self.shader = nil
-
---     self.restore = function()
---         self.w = self.font:getWidth(self.text)
---         self.h = self.font:getBaseline(self.text)
---         self.x = self.cx - self.w / 2
---         self.y = self.cy - self.h / 2
---     end
-
---     self.text = text
---     self.font = font
---     self.cx = cx
---     self.cy = cy
-
---     self.restore()
-
---     self.setText = function(text)
---         self.text = text
-
---         self.restore()
---     end
-
---     self.drawInternal = function()
---         love.graphics.setFont(self.font)
---         love.graphics.print(self.text, 0, 0)
---     end
-
---     return self
--- end
 
 Node.image = function(scene, parent, x, y, w, h, image)
     local self = Node.new(scene, parent, x, y, w, h)

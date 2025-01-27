@@ -4,9 +4,9 @@ uniform vec4 iColor;
 
 vec4 effect(vec4 color, Image tex, vec2 texture_coords, vec2 screen_coords)
 {
-    iColor.a;
+    vec4 texColor = Texel(tex, texture_coords);
 
-    vec4 res = Texel(tex, texture_coords);
+    texColor.a = iColor.a * texColor.a;
 
-    return res;
+    return texColor;
 }
