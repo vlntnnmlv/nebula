@@ -1,3 +1,5 @@
+-- TODO: Clean this up, looks like we need a bunch of utility methods here to work with colors
+
 function Color(r,g,b,a)
     return { r = r, g = g, b = b, a = a}
 end

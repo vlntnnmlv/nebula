@@ -1,3 +1,5 @@
+-- TODO: Move to new class system
+
 local function getValueString(value)
     if type(value) == "table" then
         if value.toString == nil then

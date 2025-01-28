@@ -1,6 +1,5 @@
 -- TODO: Add global delta time
 -- TODO: Add updatable objects (pass to shaders, pass to animatons etc)
--- TODO: Add coroutines system
 -- TODO: Multiple shaders to one node
 
 package.path = package.path..";./src/?.lua"
