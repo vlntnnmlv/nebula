@@ -6,6 +6,7 @@
 package.path = package.path..";./src/?.lua"
 
 require("core.class")
+require("core.time")
 require("core.node.node")
 require("core.node.image")
 require("core.node.text")
@@ -33,6 +34,8 @@ local function init(args)
     love.graphics.setFont(love.graphics.newFont("resources/fonts/alagard.ttf", 32))
 
     love.mouse.setCursor(love.mouse.newCursor(love.image.newImageData("resources/textures/cursor.png"), 0, 0))
+
+    Time.init()
 
     local argsResults = HandleArgs(args)
     SCREEN_WIDTH, SCREEN_HEIGHT = love.graphics.getDimensions()
@@ -65,6 +68,8 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
+    Time.update(dt)
+
     Scene.current:updateAll(dt)
 end
 

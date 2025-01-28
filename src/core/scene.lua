@@ -82,10 +82,10 @@ function Scene:drawAll()
     love.graphics.draw(self.gizmoCanvas, 0, 0)
 end
 
-function Scene:updateAll(dt)
+function Scene:updateAll()
     if self.nodesCount == 0 then return end
 
-    self.nodes[0]:update(dt)
+    self.nodes[0]:update()
 
     if self.hoveredElement == nil then return end
 

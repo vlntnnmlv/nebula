@@ -65,23 +65,23 @@ function Node:getParentID()
 end
 
 -- Events processing
-function Node:updateInternal(dt) end
+function Node:updateInternal() end
 
-function Node:update(dt)
+function Node:update()
     if not self.active then return end
 
     if self.shader ~= nil then self.shader:update() end
 
-    self:updateInternal(dt)
+    self:updateInternal()
 
-    self:updateState(dt)
+    self:updateState()
 end
 
-function Node:updateChildren(dt)
-    self.children.apply(function(child) return child:update(dt) end)
+function Node:updateChildren()
+    self.children.apply(function(child) return child:update() end)
 end
 
-function Node:updateState(dt)
+function Node:updateState()
     if self.ignoreEvents then return false end
 
     local mouseX, mouseY = love.mouse.getPosition()
@@ -89,7 +89,7 @@ function Node:updateState(dt)
         self.scene.hoveredElement = self
     end
 
-    self:updateChildren(dt)
+    self:updateChildren()
 end
 
 function Node:setKeyAction(key, action)

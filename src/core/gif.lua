@@ -6,7 +6,6 @@ GIF.new = function(scene, parent, x, y, w, h, frames)
     self.imagesData = List.new()
     self.images = List.new()
     self.fps = 12
-    self.time = 0
     self.frameSwapPeriod = 1 / self.fps
     self.frameSwapedTime = 0
 
@@ -22,16 +21,15 @@ GIF.new = function(scene, parent, x, y, w, h, frames)
     self.image = self.images.head.value
 
     local updateInternalBase = self.updateInternal
-    self.updateInternal = function(dt)
+    self.updateInternal = function()
         updateInternalBase()
 
-        self.time = self.time + dt
-        if self.time - self.frameSwapedTime < self.frameSwapPeriod then return end
+        if Time.time - self.frameSwapedTime < self.frameSwapPeriod then return end
 
         self.currentFrame = self.currentFrame.next
         if self.currentFrame == nil then self.currentFrame = self.images.head end
         self.image = self.currentFrame.value
 
-        self.frameSwapedTime = self.time
+        self.frameSwapedTime = Time.time
     end
 end
