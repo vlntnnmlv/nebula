@@ -15,6 +15,9 @@ player:setKeyAction("s", function() player.y = player.y + 1 end)
 player:setKeyAction("d", function() player.x = player.x + 1 end)
 
 local node = Image.create(sceneTest, root, 120, 120, 240, 240, "eye.png")
+function node:updateInternal()
+    self:rotate(math.sin(Time.time) / 5.0)
+end
 
 -- local text = Text.create(sceneTest, node, "hello, world!", node.x + node.w/2, node.y + node.h/2, 36)
 -- text:setColor(Color(1.0, 0, 0.0, 1.0))

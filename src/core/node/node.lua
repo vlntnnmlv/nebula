@@ -1,10 +1,8 @@
 Node = CreateClass()
 
--- TODO:
+-- NOTE:
 -- This are default values for Node object.
--- However, must not assign tables here, because it's gonna be common among all Node object.
--- Find out how to properly store static variables, and a better way to set default values.
--- (Move this to init method?)
+-- However, you must not assign tables here, because it's gonna be common among all Node objects.
 Node.scene = nil
 Node.parent = nil
 Node.children = nil
