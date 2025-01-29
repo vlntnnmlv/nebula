@@ -37,7 +37,7 @@ function Image:resize(newW, newH)
 end
 
 function Image:drawInternal()
-    love.graphics.draw(self.image, 0 + self.w / 2, 0 + self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
+    love.graphics.draw(self.image, self.w / 2, self.h / 2, self.rotation, self.scaleX, self.scaleY, self.originOffsetX, self.originOffsetY, self.shearX, self.shearY)
 end
 
 function Image:rotate(rotation)
