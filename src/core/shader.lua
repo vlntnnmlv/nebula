@@ -17,11 +17,11 @@ function Shader:init(name)
 
     self.name = name
     self.shader = love.graphics.newShader("resources/shaders/"..self.name..".glsl")
-    self.parameters = List.new()
+    self.parameters = List.create()
 end
 
 function Shader:setParameter(name, value, array)
-    self.parameters.append({name = name, value = value, lastValue = nil, array = array})
+    self.parameters:append({name = name, value = value, lastValue = nil, array = array})
 end
 
 function Shader:setActive(active)
@@ -35,7 +35,7 @@ end
 function Shader:update()
     if self.parameters.len == 0 or self.shader == nil then return end
 
-    self.parameters.apply(
+    self.parameters:apply(
         function(paramater)
             local valueToSet = nil
             if type(paramater.value) == "function" then

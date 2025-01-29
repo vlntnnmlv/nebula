@@ -3,8 +3,8 @@ GIF = {}
 GIF.new = function(scene, parent, x, y, w, h, frames)
     local self = Node.image(scene, parent, x, y, w, h, frames.head.value)
 
-    self.imagesData = List.new()
-    self.images = List.new()
+    self.imagesData = List.create()
+    self.images = List.create()
     self.fps = 12
     self.frameSwapPeriod = 1 / self.fps
     self.frameSwapedTime = 0
@@ -12,8 +12,8 @@ GIF.new = function(scene, parent, x, y, w, h, frames)
     local cur = frames.head
     while cur ~= nil do
         local imageData = love.image.newImageData(cur.value)
-        self.imagesData.append(imageData)
-        self.images.append(love.graphics.newImage(imageData))
+        self.imagesData:append(imageData)
+        self.images:append(love.graphics.newImage(imageData))
         cur = cur.next
     end
 

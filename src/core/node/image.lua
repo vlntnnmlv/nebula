@@ -21,6 +21,12 @@ function Image:init(scene, parent, x, y, w, h, texture)
     self.originOffsetY = self.imageData:getHeight() / 2
     self.shearX = 0
     self.shearY = 0
+
+    self.mirrorX = false
+    self.mirrorY = false
+
+    self.shader:setParameter("iMirrorX", function() return self.mirrorX end)
+    self.shader:setParameter("iMirrorY", function() return self.mirrorY end)
 end
 
 function Image:resize(newW, newH)

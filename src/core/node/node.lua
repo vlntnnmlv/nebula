@@ -28,7 +28,7 @@ end
 function Node:init(scene, parent, x, y, w, h)
     self.scene = scene
     self.parent = parent
-    self.children = List.new()
+    self.children = List.create()
     self.keyActions = {}
 
     if self.parent ~= nil then
@@ -49,11 +49,11 @@ end
 
 -- UI Tree
 function Node:linkChild(child)
-    self.children.append(child)
+    self.children:append(child)
 end
 
 function Node:remove()
-    self.parent.children.filter(function(node) return node.id == self.id end, true)
+    self.parent.children:filter(function(node) return node.id == self.id end, true)
 end
 
 function Node:getParentID()
@@ -76,7 +76,7 @@ function Node:update()
 end
 
 function Node:updateChildren()
-    self.children.apply(function(child) return child:update() end)
+    self.children:apply(function(child) return child:update() end)
 end
 
 function Node:updateState()
@@ -166,7 +166,7 @@ function Node:draw()
     love.graphics.setCanvas()
 
     -- render children
-    self.children.apply(
+    self.children:apply(
         function(child)
             child:draw() -- render child to it's canvas
             love.graphics.setColor(1.0, 1.0, 1.0, 1.0)

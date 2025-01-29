@@ -12,114 +12,115 @@ local function getValueString(value)
     return tostring(value)
 end
 
-local ListNode = {}
+local ListNode = CreateClass()
 
-ListNode.new = function(value)
-    local self = { value = value, next = nil, prev = nil }
-    return self
+function ListNode.create(value)
+    local listNode = ListNode:new{ value = value, next = nil, prev = nil }
+
+    return listNode
 end
 
 -- N <-> N <-> N --
-List = {}
+List = CreateClass()
 
-List.new = function()
-    local self = {}
+function List.create()
+    local list = List:new()
 
-    self.head = nil
-    self.tail = nil
-    self.len = 0
+    list.head = nil
+    list.tail = nil
+    list.len = 0
+    
+    return list
+end
 
-    self.dump = function()
-        local stringView = ""
+function List:dump()
+    local stringView = ""
 
-        stringView = stringView.."L<"..self.len.."> "
-        if self.head == nil then io.write("nil\n") return end
+    stringView = stringView.."L<"..self.len.."> "
+    if self.head == nil then io.write("nil\n") return end
 
-        local cur = self.head
-        stringView = stringView.."nil<-"
-        while cur ~= nil do
-            if cur.next == nil then
-                stringView = stringView..getValueString(cur.value).."->"
-            else
-                stringView = stringView..getValueString(cur.value).."<->"
-            end
-            cur = cur.next
-        end
-        stringView = stringView.."nil"
-        Logger.notice(stringView)
-    end
-
-    self.append = function(value)
-        if self.head == nil then
-            self.head = ListNode.new(value)
-            self.tail = self.head
+    local cur = self.head
+    stringView = stringView.."nil<-"
+    while cur ~= nil do
+        if cur.next == nil then
+            stringView = stringView..getValueString(cur.value).."->"
         else
-            self.tail.next = ListNode.new(value)
-            self.tail.next.prev = self.tail
-            self.tail = self.tail.next
+            stringView = stringView..getValueString(cur.value).."<->"
         end
+        cur = cur.next
+    end
+    stringView = stringView.."nil"
+    Logger.notice(stringView)
+end
 
-        self.len = self.len + 1
+function List:append(value)
+    if self.head == nil then
+        self.head = ListNode.create(value)
+        self.tail = self.head
+    else
+        self.tail.next = ListNode.create(value)
+        self.tail.next.prev = self.tail
+        self.tail = self.tail.next
     end
 
-    self.remove = function(node)
-        local result = node.next
+    self.len = self.len + 1
+end
 
-        if node == self.head then
-            self.head = node.next
-        end
+function List:remove(node)
+    local result = node.next
 
-        if node == self.tail then
-            self.tail = node.prev
-        end
-
-        if node.prev ~= nil then
-            node.prev.next = node.next
-        end
-
-        if node.next ~= nil then
-            node.next.prev = node.prev
-        end
-
-        node.prev = nil
-        node.next = nil
-        node.value = nil
-        node = nil
-
-        self.len = self.len - 1
-
-        return result
+    if node == self.head then
+        self.head = node.next
     end
 
-    self.filter = function(func, first)
-        local cur = self.head
-        while cur ~= nil do
-            if func(cur.value) then
-                cur = self.remove(cur)
-                if first then return end
-            else
-                cur = cur.next
-            end
-        end
+    if node == self.tail then
+        self.tail = node.prev
     end
 
-    self.apply = function(func)
-        local cur = self.head
-        while cur ~= nil do
-            func(cur.value)
+    if node.prev ~= nil then
+        node.prev.next = node.next
+    end
+
+    if node.next ~= nil then
+        node.next.prev = node.prev
+    end
+
+    node.prev = nil
+    node.next = nil
+    node.value = nil
+    node = nil
+
+    self.len = self.len - 1
+
+    return result
+end
+
+function List:filter(func, first)
+    local cur = self.head
+    while cur ~= nil do
+        if func(cur.value) then
+            cur = self.remove(cur)
+            if first then return end
+        else
             cur = cur.next
         end
     end
+end
 
-    self.applyUntil = function(func, condition)
-        local cur = self.head
-        local tempResult = nil
-        while cur ~= nil do
-            tempResult = func(cur.value)
-            if condition(tempResult) then return tempResult end
-            cur = cur.next
-        end
+function List:apply(func)
+    local cur = self.head
+    while cur ~= nil do
+        func(cur.value)
+        cur = cur.next
     end
+end
 
-    return self
+function List:applyUntil(func, condition)
+    local cur = self.head
+    local tempResult = nil
+    while cur ~= nil do
+        tempResult = func(cur.value)
+        if condition(tempResult) then return tempResult end
+        cur = cur.next
+    end
 end

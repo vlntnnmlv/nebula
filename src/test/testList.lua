@@ -1,5 +1,5 @@
 print("Create empty")
-local l = List.new()
+local l = List.create()
 l.dump()
 
 print("fill")
