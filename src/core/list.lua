@@ -50,7 +50,12 @@ function List:dump()
         cur = cur.next
     end
     stringView = stringView.."nil"
-    Logger.notice(stringView)
+
+    if Logger == nil then
+        print(stringView)
+    else
+        Logger.notice(stringView)
+    end
 end
 
 function List:append(value)
@@ -99,7 +104,7 @@ function List:filter(func, first)
     local cur = self.head
     while cur ~= nil do
         if func(cur.value) then
-            cur = self.remove(cur)
+            cur = self:remove(cur)
             if first then return end
         else
             cur = cur.next

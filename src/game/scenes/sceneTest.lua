@@ -10,11 +10,11 @@ require("game.pinball")
 
 local pinball = Pinball.create(sceneTest, root, SCREEN_WIDTH / 2, SCREEN_HEIGHT - 128, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 
-local node = Image.create(sceneTest, root, 120, 120, 240, 240, "eye.png")
-function node:updateInternal()
-    self:rotate(math.sin(Time.time) / 5.0)
-    self:setAlpha(math.abs(math.sin(Time.time)))
-end
+-- local node = Image.create(sceneTest, root, 120, 120, 240, 240, "eye.png")
+-- function node:updateInternal()
+--     self:rotate(math.sin(Time.time) / 5.0)
+--     self:setAlpha(math.abs(math.sin(Time.time)))
+-- end
 
-node:setKeyAction("v", function() alpha = alpha - 0.01 node:setAlpha(alpha) end)
-node:setKeyAction("b", function() alpha = alpha + 0.01 node:setAlpha(alpha) end)
+-- node:setKeyAction("v", function() alpha = alpha - 0.01 node:setAlpha(alpha) end)
+-- node:setKeyAction("b", function() alpha = alpha + 0.01 node:setAlpha(alpha) end)

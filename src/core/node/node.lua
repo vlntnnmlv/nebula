@@ -102,9 +102,7 @@ function Node:updateKeys()
     end
 end
 
-function Node:setAction(action)
-    self.action = action
-end
+function Node:action(pressed) end
 
 -- Rendering
 local function clampColor(color)

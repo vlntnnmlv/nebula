@@ -38,40 +38,39 @@ function Pinball:init(scene, root, ballX, ballY, x, y, w, h)
     self.vx = 0 --love.math.random() * 1000
     self.vy = 0 --love.math.random() * 1000
 
-    self:setAction(
-        function(pressed)
-            local mx, my = love.mouse.getPosition()
-            if pressed then
-                self.pointer.active = true
-                self.vx = 0
-                self.vy = 0
-                self.ball.x = mx - self.ballSize / 2
-                self.ball.y = my - self.ballSize / 2
-            end
-
-            if not pressed then
-                self.pointer.active = false
-                self.vx = 4 * (self.ball.x - self.pointer.x)
-                self.vy = 4 * (self.ball.y - self.pointer.y)
-            end
-        end
-    )
-
     self.pointsTable = {}
 end
 
+function Pinball:action(pressed)
+    local mx, my = love.mouse.getPosition()
+    if pressed then
+        self.pointer.active = true
+        self.vx = 0
+        self.vy = 0
+        self.ball.x = mx - self.ballSize / 2
+        self.ball.y = my - self.ballSize / 2
+    end
+
+    if not pressed then
+        self.pointer.active = false
+        self.vx = 4 * (self.ball.x - self.pointer.x)
+        self.vy = 4 * (self.ball.y - self.pointer.y)
+    end
+end
+
 function Pinball:spawnPoints(n)
-    local text = Text.create(self.scene, self, n.."", self.ball.x, self.ball.y - 50, 16)
+    local text = Text.create(self.scene, self, n.."", self.ball.x + self.ballSize / 2, self.ball.y + self.ballSize / 2, 16)
     text:setColor(Palette.brightest)
     self.pointsTable[text] = { timeout = 1, start = Time.time }
 end
 
 function Pinball:updateInternal()
     for text, time in pairs(self.pointsTable) do
-        print(text, Time.time, time.start, time.timeout)
         if Time.time - time.start > time.timeout then
             self.pointsTable[text] = nil
-            text:remove() -- TODO: Fix, this methos is broken
+            text:remove()
+        else
+            text:setAlpha(Map(Time.time - time.start, 0, time.timeout, 1, 0))
         end
     end
 
