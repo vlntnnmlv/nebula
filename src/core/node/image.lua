@@ -11,6 +11,7 @@ end
 function Image:init(scene, parent, x, y, w, h, texture)
     Node.init(self, scene, parent, x, y, w, h)
 
+    -- TODO: Add some kind of ImageData registry to now load same textures more than once
     self.imageData = love.image.newImageData("resources/textures/"..texture)
     self.image = love.graphics.newImage(self.imageData)
 

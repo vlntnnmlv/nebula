@@ -12,6 +12,11 @@ function Pinball:init(scene, root, ballX, ballY, x, y, w, h)
     Node.init(self, scene, root, x, y, w, h)
     self:setColor(Color(1.0, 1.0, 1.0, 1.0))
 
+    self.bg = Node.create(scene, self, self.x, self.y, self.w, self.h)
+    self.bg.ignoreEvents = true
+    self.bg:setColor(Color(0.0, 0.0, 1.0, 1.0))
+    self.bg:setShader("flow")
+
     self.ballSize = 64
     self.ball = Image.create(
         scene,
@@ -87,33 +92,34 @@ function Pinball:updateInternal()
     local a = math.atan(dy/dx - 3.14 / 4)
     self.pointer.rotation = a
 
-    if self.vx ~= 0 and self.vy ~= 0 then
+    self.vy = self.vy + 10
+    if math.abs(self.vx) > 0.1 and math.abs(self.vy) > 0.1 then
         dx, dy = 0, 0
         dx = self.vx * Time.dt
         dy = self.vy * Time.dt
 
         if self.ball.x + dx + self.ballSize > self.w then
-            self:spawnPoints(100)
-            dx = self.ball.x + dx + self.ballSize - self.w
-            self.vx = -self.vx
+            if math.abs(dx) > 10 then self:spawnPoints(100) end
+            dx = -(self.ball.x + dx + self.ballSize - self.w)
+            self.vx = -self.vx * 0.8
         end
 
         if self.ball.x + dx < 0 then
-            self:spawnPoints(100)
+            if math.abs(dx) > 10 then self:spawnPoints(100) end
             dx = -(self.ball.x + dx)
-            self.vx = -self.vx
+            self.vx = -self.vx * 0.8
         end
 
         if self.ball.y + dy + self.ballSize > self.h then
-            self:spawnPoints(100)
-            dy = self.ball.y + dy + self.ballSize - self.h
-            self.vy = -self.vy
+            if math.abs(dy) > 10 then self:spawnPoints(100) end
+            dy = -(self.ball.y + dy + self.ballSize - self.h)
+            self.vy = -self.vy * 0.8
         end
 
         if self.ball.y + dy < 0 then
-            self:spawnPoints(100)
+            if math.abs(dy) > 10 then self:spawnPoints(100) end
             dy = -(self.ball.y + dy)
-            self.vy = -self.vy
+            self.vy = -self.vy * 0.8
         end
 
         self.ball.x = self.ball.x + dx
