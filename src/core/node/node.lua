@@ -155,28 +155,30 @@ function Node:setShaderActive(active)
 end
 
 function Node:draw()
-    if not self.active then return end
-
     love.graphics.setCanvas(self.canvas) -- set render target to self canvas
     love.graphics.clear() -- clear self canvas to complete transparancy
 
-    love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a) -- set render color to self color
-    self:drawInternal() -- draw self to self canvas
+    if self.active then
+        love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a) -- set render color to self color
+        self:drawInternal() -- draw self to self canvas
+    end
 
     love.graphics.setCanvas()
 
-    -- render children
-    self.children:apply(
-        function(child)
-            child:draw() -- render child to it's canvas
-            love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
-            love.graphics.setCanvas(self.canvas) -- render child canvas to self canvas
-            child:setShaderActive(true)
-            love.graphics.draw(child.canvas, child.x - self.x, child.y - self.y)
-            child:setShaderActive(false)
-            love.graphics.setCanvas()
-        end
-    )
+    if self.active then
+        -- render children
+        self.children:apply(
+            function(child)
+                child:draw() -- render child to it's canvas
+                love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
+                love.graphics.setCanvas(self.canvas) -- render child canvas to self canvas
+                child:setShaderActive(true)
+                love.graphics.draw(child.canvas, child.x - self.x, child.y - self.y)
+                child:setShaderActive(false)
+                love.graphics.setCanvas()
+            end
+        )
+    end
 
     -- render to the screen if self is root node
     if self.parent == nil then

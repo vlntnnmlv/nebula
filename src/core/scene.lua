@@ -102,10 +102,10 @@ function Scene:updateMouseButtonEvent(pressed)
     self.pressedElement = self.hoveredElement
 
     if pressed and self.pressedElement.action ~= nil then
-        self.pressedElement:action(pressed)
+        self.pressedElement.action(pressed)
     end
 
-    if not pressed and self.pressedElement ~= nil and self.pressedElement.id == self.hoveredElement.id and self.hoveredElement.action ~= nil then
-        self.pressedElement:action(pressed)
+    if not pressed and self.pressedElement ~= nil and self.pressedElement.id == self.hoveredElement.id and self.pressedElement.action ~= nil then
+        self.pressedElement.action(pressed)
     end
 end

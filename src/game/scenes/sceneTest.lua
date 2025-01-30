@@ -3,8 +3,8 @@ local sceneTest = Scene.create("Test")
 local alpha = 1.0
 local root = Node.create(sceneTest, nil, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
 root:setColor(Color(0.0, 0.5, 0.5, 1.0))
-root:setShader("pixelize")
-root.shader:setParameter("iScale", { 128, 128 })
+-- root:setShader("pixelize")
+-- root.shader:setParameter("iScale", { 128, 128 })
 
 require("game.pinball")
 
