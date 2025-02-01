@@ -1,13 +1,5 @@
 Pinball = CreateClass(Node)
 
-function Pinball.create(scene, root, ballX, ballY, x, y, w, h)
-    local pinball = Pinball:new()
-
-    pinball:init(scene, root, ballX, ballY, x, y, w, h)
-
-    return pinball
-end
-
 function Pinball:init(scene, root, ballX, ballY, x, y, w, h)
     Node.init(self, scene, root, x, y, w, h)
     self:setColor(Color(1.0, 1.0, 1.0, 1.0))
@@ -41,7 +33,7 @@ function Pinball:init(scene, root, ballX, ballY, x, y, w, h)
     self.pointer.active = false
 
     self.vx = 0 --love.math.random() * 1000
-    self.vy = 0 --love.math.random() * 1000
+    self.vy = 20 --love.math.random() * 1000
 
     self.pointsTable = {}
 end
@@ -95,12 +87,27 @@ function Pinball:updateInternal()
 
     local speed = Dist({x = self.vx, y = self.vy}, {x = 0, y = 0}) --TODO: Add vector2 class
     local maxSpeed = Dist({x = SCREEN_WIDTH, y = SCREEN_HEIGHT}, {x = 0, y = 0})
-    self.vy = self.vy + 10
-    if math.abs(self.vx) > 1 or math.abs(self.vy) > 1 then
 
+    if self.ball.y < SCREEN_HEIGHT - self.ballSize - 5 then
+        self.vy = self.vy + 20
+    end
+    if self.ball.y >= SCREEN_HEIGHT - self.ballSize - 5 and self.vy > 1 then
+        self.ball.y = SCREEN_HEIGHT - self.ballSize
+    end
+    if math.abs(self.vx) < 1 then self.vx = 0 end
+    if math.abs(self.vy) < 1 then self.vy = 0 end
+    if math.abs(self.vx) > 1 or math.abs(self.vy) > 1 then
         dx, dy = 0, 0
         dx = self.vx * Time.dt
         dy = self.vy * Time.dt
+
+        if math.abs(dx) < 1 then dx = 0 end
+        if math.abs(dy) < 1 then dy = 0 end
+
+        if dx == 0 then
+            if self.vx < 0 then self.vx = self.vx + 5 end
+            if self.vx > 0 then self.vx = self.vx - 5 end
+        end
 
         if self.ball.x + dx + self.ballSize > self.w then
             Sound.sfx("bop", speed / maxSpeed, 1 + speed / maxSpeed)
@@ -120,14 +127,14 @@ function Pinball:updateInternal()
             Sound.sfx("bop", speed / maxSpeed, 1 + speed / maxSpeed)
             if math.abs(dy) > 10 then self:spawnPoints(100) end
             dy = -(self.ball.y + dy + self.ballSize - self.h)
-            self.vy = -self.vy * 0.8
+            self.vy = -self.vy * 0.6
         end
 
         if self.ball.y + dy < 0 then
             Sound.sfx("bop", speed / maxSpeed, 1 + speed / maxSpeed)
             if math.abs(dy) > 10 then self:spawnPoints(100) end
             dy = -(self.ball.y + dy)
-            self.vy = -self.vy * 0.8
+            self.vy = -self.vy * 0.6
         end
 
         self.ball.x = self.ball.x + dx

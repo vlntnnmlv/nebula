@@ -17,14 +17,6 @@ Node.canvas = nil
 Node.shader = nil
 Node.color = nil
 
-function Node.create(scene, parent, x, y, w, h)
-    local node = Node:new()
-
-    node:init(scene, parent, x, y, w, h)
-
-    return node
-end
-
 function Node:init(scene, parent, x, y, w, h)
     self.scene = scene
     self.parent = parent

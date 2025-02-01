@@ -2,14 +2,6 @@
 Shader = CreateClass()
 Shader.count = 1
 
-function Shader.create(name)
-    local shader = Shader:new()
-
-    shader:init(name)
-
-    return shader
-end
-
 function Shader:init(name)
     self.i = 0
     self.id = Shader.count

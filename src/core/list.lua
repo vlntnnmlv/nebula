@@ -14,23 +14,19 @@ end
 
 local ListNode = CreateClass()
 
-function ListNode.create(value)
-    local listNode = ListNode:new{ value = value, next = nil, prev = nil }
-
-    return listNode
+function ListNode:init(value)
+    self.value = value
+    self.next = nil
+    self.prev = nil
 end
 
 -- N <-> N <-> N --
 List = CreateClass()
 
-function List.create()
-    local list = List:new()
-
-    list.head = nil
-    list.tail = nil
-    list.len = 0
-    
-    return list
+function List:init()
+    self.head = nil
+    self.tail = nil
+    self.len = 0
 end
 
 function List:dump()

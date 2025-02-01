@@ -1,12 +1,5 @@
 Text = CreateClass(Node)
 
-function Text.create(scene, parent, str, cx, cy, fontSize)
-    local text = Text:new()
-
-    text:init(scene, parent, str, cx, cy, fontSize)
-    return text
-end
-
 function Text:init(scene, parent, str, cx, cy, fontSize)
     local font = love.graphics.newFont("resources/fonts/alagard.ttf", fontSize)
 

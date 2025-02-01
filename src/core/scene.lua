@@ -34,14 +34,6 @@ function Scene.loadScenes(scenesDir)
     Logger.success("Backup scene set!")
 end
 
-function Scene.create(id)
-    local scene = Scene:new()
-
-    scene:init(id)
-
-    return scene
-end
-
 function Scene:init(id)
     self.id = id
     self.data[id] = self
