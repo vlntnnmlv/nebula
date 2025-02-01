@@ -13,3 +13,9 @@ function Map(v, sa, sb, da, db)
 
     return da + (v - sa)/(sb - sa)*(db - da)
 end
+
+function Dist(a, b)
+    local dx = a.x - b.x
+    local dy = a.y - b.y
+    return math.sqrt(dx * dx + dy * dy)
+end

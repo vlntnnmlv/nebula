@@ -17,6 +17,7 @@ require("core.logger")
 require("core.palette")
 require("core.math")
 require("core.list")
+require("core.sound")
 
 SCREEN_WIDTH, SCREEN_HEIGHT = nil, nil
 

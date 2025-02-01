@@ -195,13 +195,13 @@ function Node:draw()
 end
 
 function Node:drawInternal()
-    love.graphics.polygon(
-        "fill",
-        0, 0,
-        0 + self.w - 1, 0,
-        0 + self.w - 1, 0 + self.h - 1,
-        0, 0 + self.h - 1
-    )
+    -- love.graphics.polygon(
+    --     "fill",
+    --     0, 0,
+    --     0 + self.w - 1, 0,
+    --     0 + self.w - 1, 0 + self.h - 1,
+    --     0, 0 + self.h - 1
+    -- )
 end
 
 function Node:drawGizmo()

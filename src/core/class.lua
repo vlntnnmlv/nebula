@@ -30,6 +30,14 @@ function CreateClass(...)
         return o
     end
 
+    function class.create(...)
+        local instance = class:new()
+
+        instance:init(...)
+
+        return instance
+    end
+
     -- return new class
     return class
 end
