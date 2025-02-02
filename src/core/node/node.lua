@@ -29,11 +29,14 @@ function Node:init(scene, parent, x, y, w, h)
 
     self.scene:registerNode(self)
 
-    self.w = w
+    self.w = w 
     self.h = h
     self.x = x
     self.y = y
     self.pivot = Vector2.create(0.0, 0.0)
+
+    if self.w < 1 then self.w = 1 end
+    if self.h < 1 then self.h = 1 end
 
     self.canvas = love.graphics.newCanvas(self.w, self.h, { format = "rgba8" })
     self.shader = Shader.create("image")
