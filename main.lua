@@ -6,6 +6,7 @@ package.path = package.path..";./src/?.lua"
 
 require("core.class")
 require("core.time")
+require("core.vector")
 require("core.node.node")
 require("core.node.image")
 require("core.node.text")

@@ -7,11 +7,13 @@ function Image:init(scene, parent, x, y, w, h, texture)
     self.imageData = love.image.newImageData("resources/textures/"..texture)
     self.image = love.graphics.newImage(self.imageData)
 
+    -- center of rotation is in a center by default
+    self.originOffsetX = self.imageData:getWidth() * 0.5
+    self.originOffsetY = self.imageData:getHeight() * 0.5
+
     self.scaleX = self.w / self.imageData:getWidth()
     self.scaleY = self.h / self.imageData:getHeight()
     self.rotation = 0
-    self.originOffsetX = self.imageData:getWidth() / 2
-    self.originOffsetY = self.imageData:getHeight() / 2
     self.shearX = 0
     self.shearY = 0
 
@@ -24,6 +26,9 @@ end
 
 function Image:resize(newW, newH)
     Node.resize(self, newW, newH)
+
+    self.originOffsetX = self.imageData:getWidth() / 2
+    self.originOffsetY = self.imageData:getHeight() / 2
 
     self.scaleX = self.w / self.imageData:getWidth()
     self.scaleY = self.h / self.imageData:getHeight()

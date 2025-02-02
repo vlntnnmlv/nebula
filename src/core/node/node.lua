@@ -33,6 +33,7 @@ function Node:init(scene, parent, x, y, w, h)
     self.h = h
     self.x = x
     self.y = y
+    self.pivot = Vector2.create(0.0, 0.0)
 
     self.canvas = love.graphics.newCanvas(self.w, self.h, { format = "rgba8" })
     self.shader = Shader.create("image")
@@ -163,7 +164,7 @@ function Node:draw()
                 love.graphics.setColor(1.0, 1.0, 1.0, 1.0)
                 love.graphics.setCanvas(self.canvas) -- render child canvas to self canvas
                 child:setShaderActive(true)
-                love.graphics.draw(child.canvas, child.x - self.x, child.y - self.y)
+                love.graphics.draw(child.canvas, (child.x - child.pivot.x * child.w) - self.x, (child.y - child.pivot.y * child.h) - self.y)
                 child:setShaderActive(false)
                 love.graphics.setCanvas()
             end
@@ -204,20 +205,20 @@ function Node:drawGizmo()
     love.graphics.setLineWidth(2)
     love.graphics.polygon(
         "line",
-        1 + self.x, 1 + self.y,
-        self.x + self.w - 1, 1 + self.y,
-        self.x + self.w - 1, self.y + self.h - 1,
-        1 + self.x, self.y + self.h - 1
+        1 + self.x - self.pivot.x * self.w, 1 + self.y - self.pivot.y * self.h,
+        self.x + self.w - 1 - self.pivot.x * self.w, 1 + self.y - self.pivot.y * self.h,
+        self.x + self.w - 1 - self.pivot.x * self.w, self.y + self.h - 1 - self.pivot.y * self.h,
+        1 + self.x - self.pivot.x * self.w, self.y + self.h - 1 - self.pivot.y * self.h
     )
 
-    love.graphics.print(self.id, self.x + self.w - 20, self.y + 4)
+    love.graphics.print(self.id, self.x + self.w - 20 - self.pivot.x * self.w, self.y + 4 - self.pivot.y * self.h)
 
     if self.scene.hoveredElement == self then
-        love.graphics.circle("fill", self.x + 9, self.y + 9, 5)
+        love.graphics.circle("fill", self.x + 9 - self.pivot.x * self.w, self.y + 9 - self.pivot.y * self.h, 5)
     end
 
     if self.scene.pressedElement == self then
-        love.graphics.polygon("fill", self.x + 23, self.y + 18, self.x + 31, self.y + 18, self.x + 27, self.y + 9)
+        love.graphics.polygon("fill", self.x + 23 - self.pivot.x * self.w, self.y + 18 - self.pivot.y * self.h, self.x + 31 - self.pivot.x * self.w, self.y + 18 - self.pivot.y * self.h, self.x + 27 - self.pivot.x * self.w, self.y + 9 - self.pivot.y * self.h)
     end
 
     love.graphics.setColor(self.color.r, self.color.g, self.color.b, self.color.a)
